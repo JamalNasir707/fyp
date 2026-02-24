@@ -1,0 +1,14 @@
+.dart_tool/
+.packages
+.pub-cache/
+build/
+android/.gradle/
+android/app/build/
+ios/Pods/
+lib/generated_plugin_registrant.dart
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.log
