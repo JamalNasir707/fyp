@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan your trip | TripNest</title>
+    <link rel="icon" href="assets/images/logoWithText.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="PlannerPage">
+    <header class="TripHubTopbar TripHubTopbar--compact">
+        <a class="TripHubTopbar__brand" href="home.html">🧭 TripNest</a>
+        <a href="home.html" class="TripHubBackLink">← Back to home</a>
+    </header>
+
+    <main class="PlannerMain PlannerMain--planOnly" id="planMain"></main>
+
+    <script src="session-manager.js"></script>
+    <script src="trip-flow.js"></script>
+    <script src="trip-preferences.js"></script>
+    <script>
+        requireLogin();
+
+        function renderSavedTripsList() {
+            const trips = getSavedTrips();
+            if (!trips.length) return '';
+            return `
+                <div class="SavedTrips">
+                    <h3>Your trips</h3>
+                    ${trips.map((t) => `
+                        <div class="TripCard" data-trip-id="${t.id}">
+                            <strong>${t.name || 'My Trip'}</strong><br/>
+                            <small>${formatTripDateRange(t.startDate, t.endDate)}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        const planMain = document.getElementById('planMain');
+        planMain.innerHTML = `
+            <div class="HomeWrapper">
+                <div class="HomeCard">
+                    <div class="HomeScreen">
+                        <h2 class="HomeTitle">Plan your trip</h2>
+                        <p class="HomeQuote">"Your journey begins here."</p>
+                        <input type="text" id="trip-name" placeholder="Where to?" />
+                        <label class="PlanTripProvince">
+                            <span>Province (for engine suggestions)</span>
+                            <select id="plan-province">
+                                <option value="Punjab">Punjab</option>
+                                <option value="Sindh">Sindh</option>
+                                <option value="Khyber Pakhtunkhwa">Khyber Pakhtunkhwa</option>
+                                <option value="Balochistan">Balochistan</option>
+                                <option value="Gilgit-Baltistan">Gilgit-Baltistan</option>
+                                <option value="Azad Kashmir">Azad Kashmir</option>
+                            </select>
+                        </label>
+                        <p class="PlanTripHint PlanTripHint--soft">Full budget, time, and questionnaire — in workspace via <strong>Preferences</strong>.</p>
+                        <div class="HomeDateRow">
+                            <input type="date" id="start-date" aria-label="Start date" />
+                            <input type="date" id="end-date" aria-label="End date" />
+                        </div>
+                        <button type="button" id="start-planning">Start Planning</button>
+                        <p class="PlanTripHint" id="plan-hint" hidden>Please choose start and end dates.</p>
+                        ${renderSavedTripsList()}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        planMain.addEventListener('click', (event) => {
+            const card = event.target.closest('.TripCard');
+            if (card) {
+                queueLoadTrip(card.dataset.tripId);
+                window.location.href = 'index.html';
+                return;
+            }
+
+            if (event.target?.id !== 'start-planning') return;
+
+            const tripName = document.getElementById('trip-name')?.value?.trim() || '';
+            const startInput = document.getElementById('start-date')?.value || '';
+            const endInput = document.getElementById('end-date')?.value || '';
+            const hint = document.getElementById('plan-hint');
+
+            if (!startInput || !endInput) {
+                hint.hidden = false;
+                return;
+            }
+
+            const days = buildDaysFromDateRange(startInput, endInput);
+            if (!days || !days.length) {
+                hint.textContent = 'End date must be on or after start date.';
+                hint.hidden = false;
+                return;
+            }
+
+            hint.hidden = true;
+            const displayTitle = tripName ? `Trip to ${tripName}` : 'My Trip';
+            const province = document.getElementById('plan-province')?.value || 'Punjab';
+            const enginePreferences = typeof defaultEnginePreferences === 'function'
+                ? defaultEnginePreferences()
+                : { province: 'Punjab' };
+            enginePreferences.province = province;
+            const coords = typeof PROVINCE_COORDS !== 'undefined' ? PROVINCE_COORDS[province] : null;
+            if (coords) {
+                enginePreferences.startLat = coords.lat;
+                enginePreferences.startLon = coords.lon;
+            }
+            if (typeof guessProvinceFromTripName === 'function' && tripName) {
+                const guessed = guessProvinceFromTripName(tripName);
+                if (guessed) {
+                    enginePreferences.province = guessed;
+                    const gCoords = PROVINCE_COORDS[guessed];
+                    if (gCoords) {
+                        enginePreferences.startLat = gCoords.lat;
+                        enginePreferences.startLon = gCoords.lon;
+                    }
+                }
+            }
+            queueNewTrip({
+                name: tripName || 'My Trip',
+                title: displayTitle,
+                dates: formatTripDateRange(startInput, endInput),
+                startDate: startInput,
+                endDate: endInput,
+                days,
+                placesPool: [],
+                customLists: [],
+                expenses: [],
+                notes: '',
+                budget: { currency: 'PKR', amount: 0 },
+                map: { selectedPlaceId: null },
+                enginePreferences
+            });
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,477 @@
+.AuthPageShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(167, 243, 208, 0.16), transparent 30%),
+    radial-gradient(circle at top right, rgba(191, 219, 254, 0.32), transparent 34%),
+    linear-gradient(180deg, #f8fbff 0%, #ffffff 32%, #f4f7fc 100%);
+  color: #0f172a;
+}
+
+.AuthExperience {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
+  gap: 30px;
+  align-items: center;
+  padding: 28px 0;
+}
+
+.AuthVisualPanel {
+  position: relative;
+  padding: 34px;
+  border-radius: 36px;
+  background:
+    radial-gradient(circle at top right, rgba(165, 180, 252, 0.42), transparent 30%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(239, 246, 255, 0.94) 100%);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 26px 54px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.AuthVisualPanel__copy,
+.AuthVisualPanel__trust,
+.AuthVisualMockup__grid,
+.AuthPanel__card,
+.AuthForm,
+.AuthFieldGrid {
+  display: grid;
+}
+
+.AuthVisualPanel__copy {
+  gap: 18px;
+  max-width: 560px;
+}
+
+.AuthVisualPanel__copy h2 {
+  margin: 0;
+  font-size: clamp(40px, 5vw, 62px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.AuthVisualPanel__copy p,
+.AuthVisualCard p,
+.AuthSwitchText,
+.AuthSupportNote,
+.AuthBanner,
+.AuthField input,
+.AuthField label,
+.AuthCardHeader__copy p {
+  color: #64748b;
+}
+
+.AuthVisualPanel__copy p {
+  margin: 0;
+  max-width: 500px;
+  font-size: 16px;
+  line-height: 1.85;
+}
+
+.AuthVisualPanel__trust {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 26px 0 34px;
+}
+
+.AuthTrustItem {
+  min-height: 56px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.AuthTrustItem__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.AuthTrustItem__icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.AuthVisualMockup {
+  position: relative;
+  margin-top: 18px;
+  padding: 20px 0 12px;
+}
+
+.AuthVisualMockup__window,
+.AuthVisualFloat,
+.AuthPanel__card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+}
+
+.AuthVisualMockup__window {
+  position: relative;
+  z-index: 2;
+  border-radius: 30px;
+  padding: 20px;
+  backdrop-filter: blur(18px);
+}
+
+.AuthVisualMockup__bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.AuthVisualMockup__bar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.AuthVisualMockup__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.AuthVisualCard {
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(248, 250, 252, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.AuthVisualCard--hero {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at top right, rgba(191, 219, 254, 0.8), transparent 34%),
+    linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+.AuthVisualCard--wide {
+  grid-column: 1 / -1;
+}
+
+.AuthVisualCard small,
+.AuthVisualFloat small {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.AuthVisualCard strong,
+.AuthVisualFloat strong,
+.AuthCardHeader__copy h1,
+.AuthField label {
+  color: #0f172a;
+}
+
+.AuthVisualCard strong,
+.AuthVisualFloat strong {
+  display: block;
+}
+
+.AuthVisualCard strong {
+  font-size: 22px;
+}
+
+.AuthVisualCard p {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.AuthVisualCard__timeline {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.AuthVisualCard__timeline span {
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: #fff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.AuthVisualFloat {
+  position: absolute;
+  padding: 16px 18px;
+  border-radius: 22px;
+  z-index: 3;
+}
+
+.AuthVisualFloat--top {
+  top: -6px;
+  right: -10px;
+  width: 220px;
+}
+
+.AuthVisualFloat--bottom {
+  left: -12px;
+  bottom: -8px;
+  width: 240px;
+}
+
+.AuthPanel {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.AuthPanel__card {
+  width: min(520px, 100%);
+  padding: 32px;
+  border-radius: 34px;
+  gap: 22px;
+  backdrop-filter: blur(16px);
+}
+
+.AuthGoogleButton {
+  width: 100%;
+  justify-content: center;
+}
+
+.AuthCardHeader {
+  display: grid;
+  gap: 22px;
+}
+
+.AuthCardHeader__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.AuthCardHeader__logo strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+.AuthCardHeader__logo span:last-child {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.AuthCardHeader__copy h1 {
+  margin: 0 0 10px;
+  font-size: clamp(30px, 4vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.AuthCardHeader__copy p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.AuthBanner {
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.AuthBanner--error {
+  background: rgba(254, 242, 242, 0.96);
+  border: 1px solid rgba(252, 165, 165, 0.85);
+  color: #b91c1c;
+}
+
+.AuthBanner--success {
+  background: rgba(240, 253, 244, 0.96);
+  border: 1px solid rgba(134, 239, 172, 0.88);
+  color: #15803d;
+}
+
+.AuthForm {
+  gap: 18px;
+}
+
+.AuthField {
+  display: grid;
+  gap: 8px;
+}
+
+.AuthFieldGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.AuthField__labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.AuthField label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.AuthField input {
+  width: 100%;
+  min-height: 54px;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(203, 213, 225, 1);
+  background: rgba(255, 255, 255, 0.95);
+  font: inherit;
+  font-size: 15px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.AuthField input:focus {
+  outline: none;
+  border-color: rgba(99, 102, 241, 0.8);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  background: #fff;
+}
+
+.AuthInlineAction,
+.AuthSwitchAction {
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.AuthInlineAction {
+  font-size: 13px;
+}
+
+.AuthSubmitButton {
+  width: 100%;
+  min-height: 54px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 18px 30px rgba(79, 70, 229, 0.22);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.AuthSubmitButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 22px 36px rgba(79, 70, 229, 0.28);
+}
+
+.AuthSubmitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+  transform: none;
+}
+
+.AuthDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.AuthDivider__line {
+  flex: 1;
+  height: 1px;
+  background: rgba(226, 232, 240, 1);
+}
+
+.AuthDivider__label {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.AuthSwitchText,
+.AuthSupportNote {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.AuthSupportNote {
+  padding-top: 2px;
+}
+
+@media (max-width: 1080px) {
+  .AuthExperience {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 22px 0 28px;
+  }
+
+  .AuthPanel {
+    justify-content: center;
+  }
+
+  .AuthPanel__card {
+    width: min(640px, 100%);
+  }
+}
+
+@media (max-width: 860px) {
+  .AuthVisualPanel__trust,
+  .AuthFieldGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .AuthVisualFloat {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .AuthExperience {
+    width: min(100% - 24px, 1280px);
+    padding: 14px 0 22px;
+  }
+
+  .AuthVisualPanel,
+  .AuthPanel__card {
+    padding: 22px 18px;
+    border-radius: 26px;
+  }
+
+  .AuthVisualPanel__copy h2 {
+    font-size: 38px;
+  }
+
+  .AuthVisualMockup__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .AuthCardHeader__copy h1 {
+    font-size: 30px;
+  }
+
+  .AuthField__labelRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

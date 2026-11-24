@@ -1,0 +1,10 @@
+FYP SYSTEM REPORT
+=================
+
+Total Locations in Pool: 1
+Final Utility Score: 0.62
+Total Distance Optimized: 3.64 km
+
+Selected Route:
+1. Liberty Market (Urban)
+   Why: Very close to your starting point

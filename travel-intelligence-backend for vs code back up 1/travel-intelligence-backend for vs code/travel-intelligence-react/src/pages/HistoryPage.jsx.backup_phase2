@@ -1,0 +1,97 @@
+import { useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import TripHubHeader from '../components/TripHubHeader'
+import LandingFooter from '../components/landing/LandingFooter'
+import { useApp } from '../context/AppContext'
+import { formatDisplayName } from '../lib/profile'
+import '../styles/landing.css'
+
+function getLastOpenedValue(record) {
+  return (
+    record?.lastOpened
+    || record?.data?.lastOpened
+    || record?.updatedAt
+    || record?.data?.updatedAt
+    || record?.createdAt
+    || record?.data?.createdAt
+    || ''
+  )
+}
+
+function formatLastOpened(value) {
+  const date = new Date(value)
+  if (!Number.isFinite(date.getTime())) return 'Not opened yet'
+  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+}
+
+export default function HistoryPage() {
+  const navigate = useNavigate()
+  const { savedTrips, user, openSavedTrip } = useApp()
+
+  const historyRows = useMemo(() => (
+    [...savedTrips]
+      .sort((a, b) => new Date(getLastOpenedValue(b)).getTime() - new Date(getLastOpenedValue(a)).getTime())
+      .map((trip) => ({
+        id: trip.id,
+        title: trip?.data?.title || trip?.name || trip?.data?.name || 'My Trip',
+        type: 'Trip',
+        lastOpened: formatLastOpened(getLastOpenedValue(trip)),
+        createdBy: formatDisplayName(trip?.createdBy || trip?.user || user),
+      }))
+  ), [savedTrips, user])
+
+  function handleOpenTrip(tripId) {
+    openSavedTrip(tripId)
+    navigate('/workspace')
+  }
+
+  return (
+    <div className="TripHubPage TripHubPage--history">
+      <TripHubHeader activePage="history" />
+
+      <main className="TripHubMain TripHubHistoryMain">
+        <section className="TripHubHistory">
+          <header className="TripHubHistory__header">
+            <h1>Your history</h1>
+          </header>
+
+          {!historyRows.length ? (
+            <div className="TripHubTrips__empty">
+              <p>No recent trips.</p>
+            </div>
+          ) : (
+            <div className="TripHubHistoryTable" role="table" aria-label="Trip history">
+              <div className="TripHubHistoryTable__head" role="rowgroup">
+                <div className="TripHubHistoryTable__row TripHubHistoryTable__row--head" role="row">
+                  <span role="columnheader">Trip Title</span>
+                  <span role="columnheader">Type</span>
+                  <span role="columnheader">Last Opened</span>
+                  <span role="columnheader">Created By</span>
+                </div>
+              </div>
+
+              <div className="TripHubHistoryTable__body" role="rowgroup">
+                {historyRows.map((row) => (
+                  <button
+                    key={row.id}
+                    type="button"
+                    className="TripHubHistoryTable__row TripHubHistoryTable__row--item"
+                    role="row"
+                    onClick={() => handleOpenTrip(row.id)}
+                  >
+                    <span role="cell">{row.title}</span>
+                    <span role="cell">{row.type}</span>
+                    <span role="cell">{row.lastOpened}</span>
+                    <span role="cell">{row.createdBy}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
+
+      <LandingFooter />
+    </div>
+  )
+}

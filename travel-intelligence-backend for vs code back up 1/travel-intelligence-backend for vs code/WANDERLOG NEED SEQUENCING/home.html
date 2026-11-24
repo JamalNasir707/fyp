@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TripNest — Home</title>
+    <link rel="icon" href="assets/images/logoWithText.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="TripHubPage">
+    <header class="TripHubTopbar">
+        <a class="TripHubTopbar__brand" href="home.html">🧭 TripNest</a>
+        <nav class="TripHubTopbar__nav">
+            <a href="home.html" class="is-active">Home</a>
+        </nav>
+        <div class="TripHubTopbar__actions">
+            <span class="TripHubTopbar__user" id="hub-username"></span>
+            <button type="button" class="PlannerPillButton PlannerPillButton--dark" id="hub-logout-btn">Logout</button>
+        </div>
+    </header>
+
+    <main class="TripHubMain">
+        <section class="TripHubHero">
+            <div>
+                <h1>Recently viewed and upcoming</h1>
+                <p class="TripHubHero__sub">Your saved trips and plans in one place.</p>
+            </div>
+            <a href="plan-trip.html" class="TripHubCtaButton">+ Plan new trip</a>
+        </section>
+
+        <section class="TripHubTrips" id="hub-trips-section">
+            <div class="TripHubTrips__empty" id="hub-trips-empty" hidden>
+                <p>No saved trips yet.</p>
+                <a href="plan-trip.html" class="TripHubCtaButton TripHubCtaButton--inline">+ Plan new trip</a>
+            </div>
+            <div class="TripHubTrips__grid" id="hub-trips-grid"></div>
+        </section>
+    </main>
+
+    <div class="TripHubDeleteModal" id="hub-delete-modal" hidden aria-hidden="true">
+        <div class="TripHubDeleteModal__backdrop" data-delete-cancel="true"></div>
+        <div class="TripHubDeleteModal__dialog" role="dialog" aria-modal="true" aria-labelledby="hub-delete-title">
+            <h2 id="hub-delete-title">Delete</h2>
+            <p>Are you sure you want to delete this trip plan? This action is not reversible!</p>
+            <div class="TripHubDeleteModal__actions">
+                <button type="button" class="TripHubDeleteModal__cancel" data-delete-cancel="true">No, don't delete</button>
+                <button type="button" class="TripHubDeleteModal__confirm" id="hub-delete-confirm">Yes, delete it</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="session-manager.js"></script>
+    <script src="trip-flow.js"></script>
+    <script>
+        requireLogin();
+
+        const user = session.getUser();
+        if (user?.username) {
+            document.getElementById('hub-username').textContent = user.username;
+        }
+
+        let pendingDeleteTripId = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function closeAllCardMenus() {
+            document.querySelectorAll('.TripHubCard__menu.show').forEach((menu) => {
+                menu.classList.remove('show');
+            });
+            document.querySelectorAll('.TripHubCard__menuBtn[aria-expanded="true"]').forEach((btn) => {
+                btn.setAttribute('aria-expanded', 'false');
+            });
+        }
+
+        function openDeleteModal(tripId) {
+            pendingDeleteTripId = tripId;
+            const modal = document.getElementById('hub-delete-modal');
+            modal.hidden = false;
+            modal.setAttribute('aria-hidden', 'false');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteTripId = null;
+            const modal = document.getElementById('hub-delete-modal');
+            modal.hidden = true;
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        document.getElementById('hub-logout-btn').addEventListener('click', async () => {
+            await session.logout();
+            session.redirectToLogin();
+        });
+
+        document.getElementById('hub-delete-confirm').addEventListener('click', () => {
+            if (pendingDeleteTripId == null) return;
+            deleteSavedTrip(pendingDeleteTripId);
+            closeDeleteModal();
+            closeAllCardMenus();
+            renderTripCards();
+        });
+
+        document.querySelectorAll('[data-delete-cancel]').forEach((el) => {
+            el.addEventListener('click', closeDeleteModal);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.TripHubCard__actions')) {
+                closeAllCardMenus();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeDeleteModal();
+                closeAllCardMenus();
+            }
+        });
+
+        function renderTripCards() {
+            const trips = getSavedTrips();
+            const grid = document.getElementById('hub-trips-grid');
+            const empty = document.getElementById('hub-trips-empty');
+
+            if (!trips.length) {
+                grid.innerHTML = '';
+                empty.hidden = false;
+                return;
+            }
+
+            empty.hidden = true;
+            grid.innerHTML = trips.map((t) => {
+                const data = t.data || {};
+                const title = t.name || data.title || data.name || 'My Trip';
+                const dates = formatTripDateRange(t.startDate, t.endDate);
+                const places = countTripPlaces(data);
+                const cover = escapeHtml(getTripCoverImage(data));
+                return `
+                    <article class="TripHubCard" data-trip-id="${t.id}">
+                        <div class="TripHubCard__image" style="background-image:url('${cover}')">
+                            <span class="TripHubCard__badge">Saved</span>
+                            <div class="TripHubCard__actions">
+                                <button type="button" class="TripHubCard__menuBtn" aria-label="Trip options" aria-haspopup="true" aria-expanded="false">⋯</button>
+                                <div class="TripHubCard__menu dropdown-menu dropdown-menu-right">
+                                    <button type="button" class="dropdown-item TripHubCard__deleteItem" data-delete-trip="${t.id}">
+                                        <span class="TripHubCard__deleteIcon" aria-hidden="true">🗑</span>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="TripHubCard__body" data-open-trip="true">
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="TripHubCard__meta">${escapeHtml(dates || 'Dates not set')}</p>
+                            <p class="TripHubCard__meta">${places} place${places === 1 ? '' : 's'}</p>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+
+            grid.querySelectorAll('.TripHubCard').forEach((card) => {
+                const tripId = card.dataset.tripId;
+
+                card.querySelector('[data-open-trip]')?.addEventListener('click', () => {
+                    queueLoadTrip(tripId);
+                    window.location.href = 'index.html';
+                });
+
+                const menuBtn = card.querySelector('.TripHubCard__menuBtn');
+                const menu = card.querySelector('.TripHubCard__menu');
+
+                menuBtn?.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const isOpen = menu.classList.contains('show');
+                    closeAllCardMenus();
+                    if (!isOpen) {
+                        menu.classList.add('show');
+                        menuBtn.setAttribute('aria-expanded', 'true');
+                    }
+                });
+
+                card.querySelector('[data-delete-trip]')?.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    closeAllCardMenus();
+                    openDeleteModal(tripId);
+                });
+            });
+        }
+
+        renderTripCards();
+    </script>
+</body>
+</html>

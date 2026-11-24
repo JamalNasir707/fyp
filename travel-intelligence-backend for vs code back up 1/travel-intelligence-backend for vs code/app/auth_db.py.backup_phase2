@@ -1,0 +1,945 @@
+"""
+MongoDB Atlas-backed auth, session, and trip persistence helpers.
+Falls back to local demo storage when Atlas is unreachable.
+"""
+
+import hashlib
+import json
+import logging
+import os
+import re
+import secrets
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.env_loader import load_env_file
+
+load_env_file()
+
+MONGODB_URI = os.getenv("MONGODB_URI", "").strip()
+MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "travelIntelligence")
+DEMO_FALLBACK_PATH = Path(__file__).resolve().parent.parent / "data" / "demo_fallback_store.json"
+
+mongo_client: Optional[AsyncIOMotorClient] = None
+mongo_db = None
+users_collection = None
+sessions_collection = None
+trips_collection = None
+use_demo_fallback = False
+fallback_store: Dict[str, Any] = {"users": [], "sessions": [], "trips": []}
+logger = logging.getLogger("uvicorn.error")
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _to_iso(value: Any) -> Optional[str]:
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        return value.astimezone(timezone.utc).isoformat()
+    if isinstance(value, str) and value:
+        return value
+    return None
+
+
+def _to_datetime(value: Any) -> Optional[datetime]:
+    if isinstance(value, datetime):
+        return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
+    if isinstance(value, str) and value:
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=timezone.utc)
+        except ValueError:
+            return None
+    return None
+
+
+def _clone_json(value: Any) -> Any:
+    return json.loads(json.dumps(value))
+
+
+def _load_fallback_store() -> None:
+    global fallback_store
+    if DEMO_FALLBACK_PATH.exists():
+        try:
+            fallback_store = json.loads(DEMO_FALLBACK_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            fallback_store = {"users": [], "sessions": [], "trips": []}
+    else:
+        fallback_store = {"users": [], "sessions": [], "trips": []}
+    fallback_store.setdefault("users", [])
+    fallback_store.setdefault("sessions", [])
+    fallback_store.setdefault("trips", [])
+
+
+def _save_fallback_store() -> None:
+    DEMO_FALLBACK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DEMO_FALLBACK_PATH.write_text(json.dumps(fallback_store, indent=2), encoding="utf-8")
+
+
+def _make_demo_trip(
+    trip_id: int,
+    user_id: str,
+    destination: str,
+    start_date: str,
+    end_date: str,
+    place_title: str,
+    lat: float,
+    lon: float,
+) -> Dict[str, Any]:
+    payload = {
+        "id": trip_id,
+        "tripId": trip_id,
+        "title": f"Trip to {destination}",
+        "name": destination,
+        "destination": destination,
+        "startDate": start_date,
+        "endDate": end_date,
+        "dates": f"{start_date} - {end_date}",
+        "notes": "",
+        "placesPool": [
+            {
+                "id": f"{destination.lower()}-pool-1",
+                "title": place_title,
+                "subtitle": destination,
+                "category": "attraction",
+                "lat": lat,
+                "lon": lon,
+                "note": "",
+                "startTime": "",
+                "endTime": "",
+                "visitDetails": {
+                    "visited": False,
+                    "visitedDate": None,
+                    "visitedTime": None,
+                    "notes": "",
+                },
+            }
+        ],
+        "customLists": [],
+        "days": [
+            {
+                "id": "day-1",
+                "label": "Day 1",
+                "shortLabel": "Day 1",
+                "date": start_date,
+                "items": [
+                    {
+                        "id": f"{destination.lower()}-day-1-place-1",
+                        "title": place_title,
+                        "subtitle": destination,
+                        "category": "attraction",
+                        "lat": lat,
+                        "lon": lon,
+                        "note": "",
+                        "startTime": "09:00",
+                        "endTime": "11:00",
+                        "visitDetails": {
+                            "visited": False,
+                            "visitedDate": None,
+                            "visitedTime": None,
+                            "notes": "",
+                        },
+                    }
+                ],
+            }
+        ],
+        "expenses": [],
+        "budget": {"currency": "PKR", "amount": 0},
+        "map": {"selectedPlaceId": None},
+        "enginePreferences": {"province": "Punjab"},
+        "itinerary": [
+            {
+                "id": "day-1",
+                "label": "Day 1",
+                "shortLabel": "Day 1",
+                "date": start_date,
+                "items": [
+                    {
+                        "id": f"{destination.lower()}-day-1-place-1",
+                        "title": place_title,
+                        "subtitle": destination,
+                        "category": "attraction",
+                        "lat": lat,
+                        "lon": lon,
+                    }
+                ],
+            }
+        ],
+        "preferences": {"province": "Punjab"},
+    }
+    now = _utc_now().isoformat()
+    return {
+        "tripId": trip_id,
+        "userId": user_id,
+        "destination": destination,
+        "startDate": start_date,
+        "endDate": end_date,
+        "itinerary": _clone_json(payload["itinerary"]),
+        "preferences": _clone_json(payload["preferences"]),
+        "data": _clone_json(payload),
+        "createdAt": now,
+        "updatedAt": now,
+    }
+
+
+def _ensure_fallback_seed_data() -> None:
+    seed_users = [
+        {"id": "demo-user", "username": "demo", "email": "demo@example.com", "password": "demo123", "role": "user"},
+        {"id": "admin-user", "username": "admin", "email": "admin@example.com", "password": "admin123", "role": "admin"},
+    ]
+    for entry in seed_users:
+        existing = next((user for user in fallback_store["users"] if user.get("username") == entry["username"]), None)
+        now = _utc_now().isoformat()
+        if existing:
+            existing.update({
+                "email": entry["email"],
+                "password_hash": hash_password(entry["password"]),
+                "role": entry["role"],
+            })
+        else:
+            fallback_store["users"].append({
+                "id": entry["id"],
+                "username": entry["username"],
+                "email": entry["email"],
+                "password_hash": hash_password(entry["password"]),
+                "role": entry["role"],
+                "createdAt": now,
+                "lastLogin": None,
+            })
+
+    if not fallback_store["trips"]:
+        fallback_store["trips"] = [
+            _make_demo_trip(1001, "demo-user", "Islamabad", "2026-06-11", "2026-06-12", "Faisal Masjid", 33.7295, 73.0372),
+            _make_demo_trip(1002, "demo-user", "Multan", "2026-06-25", "2026-06-26", "Multan Fort", 30.1981, 71.4687),
+        ]
+    _save_fallback_store()
+
+
+def _get_fallback_user_by_username(username: str) -> Optional[Dict[str, Any]]:
+    return next((user for user in fallback_store["users"] if user.get("username") == username), None)
+
+
+def _get_fallback_user_by_id(user_id: str) -> Optional[Dict[str, Any]]:
+    return next((user for user in fallback_store["users"] if str(user.get("id")) == str(user_id)), None)
+
+
+def _get_fallback_user_by_email(email: str) -> Optional[Dict[str, Any]]:
+    lowered = (email or "").strip().lower()
+    return next((user for user in fallback_store["users"] if str(user.get("email", "")).strip().lower() == lowered), None)
+
+
+def _get_fallback_user_by_google_id(google_id: str) -> Optional[Dict[str, Any]]:
+    return next((user for user in fallback_store["users"] if str(user.get("googleId") or "") == str(google_id)), None)
+
+
+def _make_username_candidate(name: str, email: str) -> str:
+    source = (name or "").strip() or (email or "").split("@")[0] or "traveler"
+    normalized = re.sub(r"[^a-zA-Z0-9]+", "_", source).strip("_").lower()
+    normalized = normalized[:24]
+    return normalized or f"user_{secrets.token_hex(3)}"
+
+
+def _make_unique_username_fallback(base_username: str, exclude_user_id: Optional[str] = None) -> str:
+    candidate = base_username
+    while any(
+        user.get("username") == candidate and str(user.get("id")) != str(exclude_user_id)
+        for user in fallback_store["users"]
+    ):
+        suffix = secrets.token_hex(2)
+        trimmed = base_username[: max(6, 24 - len(suffix) - 1)]
+        candidate = f"{trimmed}_{suffix}"
+    return candidate
+
+
+async def _make_unique_username_mongo(base_username: str, exclude_user_id: Optional[str] = None) -> str:
+    candidate = base_username
+    while True:
+        query: Dict[str, Any] = {"username": candidate}
+        existing = await users_collection.find_one(query, {"_id": 1})
+        if not existing or str(existing.get("_id")) == str(exclude_user_id):
+            return candidate
+        suffix = secrets.token_hex(2)
+        trimmed = base_username[: max(6, 24 - len(suffix) - 1)]
+        candidate = f"{trimmed}_{suffix}"
+
+
+def _serialize_user(doc: Dict[str, Any]) -> Dict[str, Any]:
+    payload = {
+        "id": str(doc.get("_id") or doc.get("id")),
+        "username": doc["username"],
+        "email": doc["email"],
+        "role": doc.get("role", "user"),
+    }
+    if doc.get("name"):
+        payload["name"] = doc.get("name")
+    if doc.get("provider"):
+        payload["provider"] = doc.get("provider")
+    if doc.get("profileImage"):
+        payload["profileImage"] = doc.get("profileImage")
+    if doc.get("googleId"):
+        payload["googleId"] = doc.get("googleId")
+    return payload
+
+
+def _serialize_trip(doc: Dict[str, Any]) -> Dict[str, Any]:
+    data = dict(doc.get("data") or {})
+    if data.get("id") is None:
+        data["id"] = doc.get("tripId")
+    if not data.get("name"):
+        data["name"] = doc.get("destination") or data.get("title") or "My Trip"
+    if not data.get("title"):
+        data["title"] = data.get("title") or f"Trip to {data['name']}" if data.get("name") and data.get("name") != "My Trip" else "My Trip"
+    if not data.get("startDate"):
+        data["startDate"] = doc.get("startDate") or ""
+    if not data.get("endDate"):
+        data["endDate"] = doc.get("endDate") or ""
+    return {
+        "id": doc.get("tripId"),
+        "tripId": doc.get("tripId"),
+        "name": doc.get("destination") or data.get("name") or "My Trip",
+        "startDate": doc.get("startDate") or data.get("startDate") or "",
+        "endDate": doc.get("endDate") or data.get("endDate") or "",
+        "createdAt": _to_iso(doc.get("createdAt")),
+        "updatedAt": _to_iso(doc.get("updatedAt")),
+        "data": data,
+    }
+
+
+def _normalize_trip_payload(trip_payload: Dict[str, Any]) -> Dict[str, Any]:
+    payload = dict(trip_payload or {})
+    trip_id = payload.get("id")
+    if trip_id is None:
+        trip_id = payload.get("tripId")
+    if trip_id is None:
+        trip_id = int(datetime.now(timezone.utc).timestamp() * 1000)
+    payload["id"] = trip_id
+    destination = str(payload.get("name") or payload.get("destination") or payload.get("title") or "My Trip").strip() or "My Trip"
+    preferences = payload.get("enginePreferences")
+    if not isinstance(preferences, dict):
+        preferences = payload.get("preferences") if isinstance(payload.get("preferences"), dict) else {}
+    itinerary = payload.get("days")
+    if not isinstance(itinerary, list):
+        itinerary = payload.get("itinerary") if isinstance(payload.get("itinerary"), list) else []
+    return {
+        "tripId": trip_id,
+        "destination": destination,
+        "startDate": payload.get("startDate") or "",
+        "endDate": payload.get("endDate") or "",
+        "itinerary": itinerary,
+        "preferences": preferences,
+        "data": payload,
+    }
+
+
+async def init_db() -> None:
+    global mongo_client, mongo_db, users_collection, sessions_collection, trips_collection, use_demo_fallback
+    if mongo_client is not None or use_demo_fallback:
+        return
+
+    if not MONGODB_URI:
+        use_demo_fallback = True
+        _load_fallback_store()
+        _ensure_fallback_seed_data()
+        logger.warning("MONGODB_URI is not configured; using demo fallback storage.")
+        return
+
+    try:
+        mongo_client = AsyncIOMotorClient(MONGODB_URI, serverSelectionTimeoutMS=8000)
+        await mongo_client.admin.command("ping")
+        default_db = mongo_client.get_default_database()
+        mongo_db = default_db if default_db is not None else mongo_client[MONGODB_DB_NAME]
+        users_collection = mongo_db["users"]
+        sessions_collection = mongo_db["sessions"]
+        trips_collection = mongo_db["trips"]
+
+        await users_collection.create_index("username", unique=True)
+        await users_collection.create_index("email", unique=True)
+        await sessions_collection.create_index("token", unique=True)
+        await sessions_collection.create_index("expiresAt", expireAfterSeconds=0)
+        await trips_collection.create_index([("userId", 1), ("tripId", 1)], unique=True)
+        await trips_collection.create_index("userId")
+
+        await ensure_seed_users()
+    except Exception as exc:
+        if mongo_client is not None:
+            mongo_client.close()
+        mongo_client = None
+        mongo_db = None
+        users_collection = None
+        sessions_collection = None
+        trips_collection = None
+        use_demo_fallback = True
+        _load_fallback_store()
+        _ensure_fallback_seed_data()
+        logger.warning("MongoDB unavailable, using demo fallback storage: %s", exc)
+
+
+async def close_db() -> None:
+    global mongo_client, mongo_db, users_collection, sessions_collection, trips_collection
+    if mongo_client is not None:
+        mongo_client.close()
+    if use_demo_fallback:
+        _save_fallback_store()
+    mongo_client = None
+    mongo_db = None
+    users_collection = None
+    sessions_collection = None
+    trips_collection = None
+
+
+def hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    pwd_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100000)
+    return f"{salt}${pwd_hash.hex()}"
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    try:
+        salt, pwd_hash = password_hash.split("$")
+        new_hash = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100000)
+        return new_hash.hex() == pwd_hash
+    except Exception:
+        return False
+
+
+async def create_user(username: str, email: str, password: str, role: str = "user") -> dict:
+    try:
+        if use_demo_fallback:
+            existing = next(
+                (user for user in fallback_store["users"] if user.get("username") == username or user.get("email") == email),
+                None,
+            )
+            if existing:
+                return {"success": False, "error": "Username or email already exists"}
+            user_doc = {
+                "id": f"user-{secrets.token_hex(8)}",
+                "username": username,
+                "email": email,
+                "name": username,
+                "password_hash": hash_password(password),
+                "role": role,
+                "createdAt": _utc_now().isoformat(),
+                "lastLogin": None,
+            }
+            fallback_store["users"].append(user_doc)
+            _save_fallback_store()
+            return {"success": True, "user_id": str(user_doc["id"]), "username": username, "role": role}
+
+        existing = await users_collection.find_one(
+            {"$or": [{"username": username}, {"email": email}]},
+            {"_id": 1},
+        )
+        if existing:
+            return {"success": False, "error": "Username or email already exists"}
+
+        user_doc = {
+            "username": username,
+            "email": email,
+            "name": username,
+            "password_hash": hash_password(password),
+            "role": role,
+            "createdAt": _utc_now(),
+            "lastLogin": None,
+        }
+        result = await users_collection.insert_one(user_doc)
+        return {"success": True, "user_id": str(result.inserted_id), "username": username, "role": role}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def ensure_seed_users() -> None:
+    seed_users = [
+        {"username": "demo", "email": "demo@example.com", "password": "demo123", "role": "user"},
+        {"username": "admin", "email": "admin@example.com", "password": "admin123", "role": "admin"},
+    ]
+    for entry in seed_users:
+        await users_collection.update_one(
+            {"username": entry["username"]},
+            {
+                "$set": {
+                    "email": entry["email"],
+                    "password_hash": hash_password(entry["password"]),
+                    "role": entry["role"],
+                },
+                "$setOnInsert": {"createdAt": _utc_now()},
+            },
+            upsert=True,
+        )
+
+
+async def authenticate_user(username: str, password: str) -> dict:
+    try:
+        if use_demo_fallback:
+            user = _get_fallback_user_by_username(username)
+            if not user:
+                return {"success": False, "error": "User not found"}
+            if not verify_password(password, user.get("password_hash", "")):
+                return {"success": False, "error": "Invalid password"}
+            user["lastLogin"] = _utc_now().isoformat()
+            _save_fallback_store()
+            serialized = _serialize_user(user)
+            return {
+                "success": True,
+                "user_id": serialized["id"],
+                "name": serialized.get("name"),
+                "username": serialized["username"],
+                "email": serialized["email"],
+                "role": serialized["role"],
+                "provider": serialized.get("provider"),
+                "profileImage": serialized.get("profileImage"),
+                "googleId": serialized.get("googleId"),
+            }
+
+        user = await users_collection.find_one({"username": username})
+        if not user:
+            return {"success": False, "error": "User not found"}
+        if not verify_password(password, user.get("password_hash", "")):
+            return {"success": False, "error": "Invalid password"}
+
+        await users_collection.update_one({"_id": user["_id"]}, {"$set": {"lastLogin": _utc_now()}})
+        serialized = _serialize_user(user)
+        return {
+            "success": True,
+            "user_id": serialized["id"],
+            "name": serialized.get("name"),
+            "username": serialized["username"],
+            "email": serialized["email"],
+            "role": serialized["role"],
+            "provider": serialized.get("provider"),
+            "profileImage": serialized.get("profileImage"),
+            "googleId": serialized.get("googleId"),
+        }
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def authenticate_or_create_google_user(email: str, name: str, google_id: str, profile_image: Optional[str] = None) -> dict:
+    try:
+        normalized_email = (email or "").strip().lower()
+        normalized_name = (name or "").strip() or normalized_email.split("@")[0] or "Traveler"
+        normalized_picture = (profile_image or "").strip() or None
+
+        if use_demo_fallback:
+            user = _get_fallback_user_by_email(normalized_email) or _get_fallback_user_by_google_id(google_id)
+            if user:
+                user["lastLogin"] = _utc_now().isoformat()
+                if normalized_name:
+                    user["name"] = normalized_name
+                if google_id:
+                    user["googleId"] = google_id
+                if normalized_picture:
+                    user["profileImage"] = normalized_picture
+                if not user.get("provider") and not user.get("password_hash"):
+                    user["provider"] = "google"
+                _save_fallback_store()
+                serialized = _serialize_user(user)
+                return {
+                    "success": True,
+                    "user_id": serialized["id"],
+                    "name": serialized.get("name"),
+                    "username": serialized["username"],
+                    "email": serialized["email"],
+                    "role": serialized["role"],
+                    "provider": serialized.get("provider"),
+                    "profileImage": serialized.get("profileImage"),
+                    "googleId": serialized.get("googleId"),
+                }
+
+            username = _make_unique_username_fallback(_make_username_candidate(normalized_name, normalized_email))
+            user_doc = {
+                "id": f"user-{secrets.token_hex(8)}",
+                "username": username,
+                "email": normalized_email,
+                "name": normalized_name,
+                "password_hash": None,
+                "role": "user",
+                "provider": "google",
+                "googleId": google_id,
+                "profileImage": normalized_picture,
+                "createdAt": _utc_now().isoformat(),
+                "lastLogin": _utc_now().isoformat(),
+            }
+            fallback_store["users"].append(user_doc)
+            _save_fallback_store()
+            serialized = _serialize_user(user_doc)
+            return {
+                "success": True,
+                "user_id": serialized["id"],
+                "name": serialized.get("name"),
+                "username": serialized["username"],
+                "email": serialized["email"],
+                "role": serialized["role"],
+                "provider": serialized.get("provider"),
+                "profileImage": serialized.get("profileImage"),
+                "googleId": serialized.get("googleId"),
+            }
+
+        user = await users_collection.find_one({"$or": [{"email": normalized_email}, {"googleId": google_id}]})
+        if user:
+            updates: Dict[str, Any] = {"lastLogin": _utc_now()}
+            if normalized_name and user.get("name") != normalized_name:
+                updates["name"] = normalized_name
+            if google_id and user.get("googleId") != google_id:
+                updates["googleId"] = google_id
+            if normalized_picture and user.get("profileImage") != normalized_picture:
+                updates["profileImage"] = normalized_picture
+            if not user.get("provider") and not user.get("password_hash"):
+                updates["provider"] = "google"
+
+            if updates:
+                await users_collection.update_one({"_id": user["_id"]}, {"$set": updates})
+                user.update(updates)
+
+            serialized = _serialize_user(user)
+            return {
+                "success": True,
+                "user_id": serialized["id"],
+                "name": serialized.get("name"),
+                "username": serialized["username"],
+                "email": serialized["email"],
+                "role": serialized["role"],
+                "provider": serialized.get("provider"),
+                "profileImage": serialized.get("profileImage"),
+                "googleId": serialized.get("googleId"),
+            }
+
+        username = await _make_unique_username_mongo(_make_username_candidate(normalized_name, normalized_email))
+        user_doc = {
+            "username": username,
+            "email": normalized_email,
+            "name": normalized_name,
+            "password_hash": None,
+            "role": "user",
+            "provider": "google",
+            "googleId": google_id,
+            "profileImage": normalized_picture,
+            "createdAt": _utc_now(),
+            "lastLogin": _utc_now(),
+        }
+        result = await users_collection.insert_one(user_doc)
+        serialized = _serialize_user({**user_doc, "_id": result.inserted_id})
+        return {
+            "success": True,
+            "user_id": serialized["id"],
+            "name": serialized.get("name"),
+            "username": serialized["username"],
+            "email": serialized["email"],
+            "role": serialized["role"],
+            "provider": serialized.get("provider"),
+            "profileImage": serialized.get("profileImage"),
+            "googleId": serialized.get("googleId"),
+        }
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def create_session(user_id: str) -> dict:
+    try:
+        token = secrets.token_urlsafe(32)
+        expires_at = _utc_now() + timedelta(days=7)
+        if use_demo_fallback:
+            fallback_store["sessions"] = [session for session in fallback_store["sessions"] if session.get("token") != token]
+            fallback_store["sessions"].append(
+                {
+                    "userId": str(user_id),
+                    "token": token,
+                    "createdAt": _utc_now().isoformat(),
+                    "expiresAt": expires_at.isoformat(),
+                }
+            )
+            _save_fallback_store()
+            return {"success": True, "token": token, "expires_at": expires_at.isoformat()}
+
+        await sessions_collection.insert_one(
+            {
+                "userId": ObjectId(user_id),
+                "token": token,
+                "createdAt": _utc_now(),
+                "expiresAt": expires_at,
+            }
+        )
+        return {"success": True, "token": token, "expires_at": expires_at.isoformat()}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def verify_session(token: str) -> dict:
+    try:
+        if use_demo_fallback:
+            session = next((entry for entry in fallback_store["sessions"] if entry.get("token") == token), None)
+            if not session:
+                return {"success": False, "error": "Invalid token"}
+            expires_at = _to_datetime(session.get("expiresAt"))
+            if not isinstance(expires_at, datetime) or _utc_now() > expires_at:
+                fallback_store["sessions"] = [entry for entry in fallback_store["sessions"] if entry.get("token") != token]
+                _save_fallback_store()
+                return {"success": False, "error": "Token expired"}
+            user = _get_fallback_user_by_id(str(session.get("userId")))
+            if not user:
+                return {"success": False, "error": "User not found"}
+            serialized = _serialize_user(user)
+            return {
+                "success": True,
+                "user_id": serialized["id"],
+                "username": serialized["username"],
+                "email": serialized["email"],
+                "role": serialized["role"],
+            }
+
+        session = await sessions_collection.find_one({"token": token})
+        if not session:
+            return {"success": False, "error": "Invalid token"}
+
+        expires_at = session.get("expiresAt")
+        if isinstance(expires_at, datetime) and expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if not isinstance(expires_at, datetime) or _utc_now() > expires_at:
+            await sessions_collection.delete_one({"_id": session["_id"]})
+            return {"success": False, "error": "Token expired"}
+
+        user = await users_collection.find_one({"_id": session["userId"]})
+        if not user:
+            return {"success": False, "error": "User not found"}
+
+        serialized = _serialize_user(user)
+        return {
+            "success": True,
+            "user_id": serialized["id"],
+            "name": serialized.get("name"),
+            "username": serialized["username"],
+            "email": serialized["email"],
+            "role": serialized["role"],
+            "provider": serialized.get("provider"),
+            "profileImage": serialized.get("profileImage"),
+            "googleId": serialized.get("googleId"),
+        }
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def logout_session(token: str) -> dict:
+    try:
+        if use_demo_fallback:
+            fallback_store["sessions"] = [entry for entry in fallback_store["sessions"] if entry.get("token") != token]
+            _save_fallback_store()
+            return {"success": True}
+        await sessions_collection.delete_one({"token": token})
+        return {"success": True}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def update_user_profile(user_id: str, *, name: str, username: str, email: str, profile_image: Optional[str] = None) -> Dict[str, Any]:
+    try:
+        normalized_name = (name or "").strip()
+        normalized_username = (username or "").strip()
+        normalized_email = (email or "").strip().lower()
+        normalized_profile_image = (profile_image or "").strip() or None
+
+        if not normalized_name or not normalized_username or not normalized_email:
+            return {"success": False, "error": "Name, username, and email are required"}
+
+        if use_demo_fallback:
+            existing = _get_fallback_user_by_id(user_id)
+            if not existing:
+                return {"success": False, "error": "User not found"}
+
+            duplicate = next(
+                (
+                    user for user in fallback_store["users"]
+                    if str(user.get("id")) != str(user_id)
+                    and (
+                        user.get("username") == normalized_username
+                        or str(user.get("email", "")).strip().lower() == normalized_email
+                    )
+                ),
+                None,
+            )
+            if duplicate:
+                return {"success": False, "error": "Username or email already exists"}
+
+            existing["name"] = normalized_name
+            existing["username"] = normalized_username
+            existing["email"] = normalized_email
+            existing["profileImage"] = normalized_profile_image
+            _save_fallback_store()
+            return {"success": True, "user": _serialize_user(existing)}
+
+        object_id = ObjectId(user_id)
+        duplicate = await users_collection.find_one(
+            {
+                "_id": {"$ne": object_id},
+                "$or": [{"username": normalized_username}, {"email": normalized_email}],
+            },
+            {"_id": 1},
+        )
+        if duplicate:
+            return {"success": False, "error": "Username or email already exists"}
+
+        update_fields = {
+            "name": normalized_name,
+            "username": normalized_username,
+            "email": normalized_email,
+            "profileImage": normalized_profile_image,
+        }
+        await users_collection.update_one({"_id": object_id}, {"$set": update_fields})
+        updated = await users_collection.find_one({"_id": object_id})
+        if not updated:
+            return {"success": False, "error": "User not found"}
+        return {"success": True, "user": _serialize_user(updated)}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def delete_user_account(user_id: str) -> Dict[str, Any]:
+    try:
+        if use_demo_fallback:
+            user = _get_fallback_user_by_id(user_id)
+            if not user:
+                return {"success": False, "error": "User not found"}
+            fallback_store["users"] = [entry for entry in fallback_store["users"] if str(entry.get("id")) != str(user_id)]
+            fallback_store["sessions"] = [entry for entry in fallback_store["sessions"] if str(entry.get("userId")) != str(user_id)]
+            fallback_store["trips"] = [entry for entry in fallback_store["trips"] if str(entry.get("userId")) != str(user_id)]
+            _save_fallback_store()
+            return {"success": True}
+
+        object_id = ObjectId(user_id)
+        user_delete = await users_collection.delete_one({"_id": object_id})
+        if user_delete.deleted_count == 0:
+            return {"success": False, "error": "User not found"}
+        await sessions_collection.delete_many({"$or": [{"userId": object_id}, {"userId": user_id}]})
+        await trips_collection.delete_many({"userId": user_id})
+        return {"success": True}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def save_trip_document(user_id: str, trip_payload: Dict[str, Any]) -> Dict[str, Any]:
+    try:
+        normalized = _normalize_trip_payload(trip_payload)
+        if use_demo_fallback:
+            now = _utc_now().isoformat()
+            existing = next(
+                (
+                    trip for trip in fallback_store["trips"]
+                    if str(trip.get("userId")) == str(user_id) and str(trip.get("tripId")) == str(normalized["tripId"])
+                ),
+                None,
+            )
+            if existing is None:
+                existing = {"createdAt": now}
+                fallback_store["trips"].append(existing)
+            existing.update(
+                {
+                    "tripId": normalized["tripId"],
+                    "userId": str(user_id),
+                    "destination": normalized["destination"],
+                    "startDate": normalized["startDate"],
+                    "endDate": normalized["endDate"],
+                    "itinerary": _clone_json(normalized["itinerary"]),
+                    "preferences": _clone_json(normalized["preferences"]),
+                    "data": _clone_json(normalized["data"]),
+                    "updatedAt": now,
+                }
+            )
+            saved = _clone_json(existing)
+            _save_fallback_store()
+            return {"success": True, "trip": _serialize_trip(saved)}
+
+        document = {
+            "tripId": normalized["tripId"],
+            "userId": user_id,
+            "destination": normalized["destination"],
+            "startDate": normalized["startDate"],
+            "endDate": normalized["endDate"],
+            "itinerary": normalized["itinerary"],
+            "preferences": normalized["preferences"],
+            "data": normalized["data"],
+            "updatedAt": _utc_now(),
+        }
+        await trips_collection.update_one(
+            {"userId": user_id, "tripId": normalized["tripId"]},
+            {"$set": document, "$setOnInsert": {"createdAt": _utc_now()}},
+            upsert=True,
+        )
+        saved = await trips_collection.find_one({"userId": user_id, "tripId": normalized["tripId"]})
+        return {"success": True, "trip": _serialize_trip(saved)}
+    except Exception as exc:
+        return {"success": False, "error": str(exc)}
+
+
+async def list_trips_for_user(user: Dict[str, Any]) -> List[Dict[str, Any]]:
+    if use_demo_fallback:
+        query = fallback_store["trips"] if user.get("role") == "admin" else [
+            trip for trip in fallback_store["trips"] if str(trip.get("userId")) == str(user["user_id"])
+        ]
+        ordered = sorted(
+            query,
+            key=lambda trip: _to_datetime(trip.get("updatedAt")) or datetime.min.replace(tzinfo=timezone.utc),
+            reverse=True,
+        )
+        return [_serialize_trip(_clone_json(doc)) for doc in ordered]
+    query = {} if user.get("role") == "admin" else {"userId": user["user_id"]}
+    trips = await trips_collection.find(query).sort("updatedAt", -1).to_list(length=None)
+    return [_serialize_trip(doc) for doc in trips]
+
+
+async def delete_trip_for_user(user: Dict[str, Any], trip_id: Any) -> bool:
+    if use_demo_fallback:
+        before = len(fallback_store["trips"])
+        fallback_store["trips"] = [
+            trip for trip in fallback_store["trips"]
+            if not (
+                str(trip.get("tripId")) == str(trip_id)
+                and (user.get("role") == "admin" or str(trip.get("userId")) == str(user["user_id"]))
+            )
+        ]
+        deleted = len(fallback_store["trips"]) < before
+        if deleted:
+            _save_fallback_store()
+        return deleted
+    query = {"tripId": trip_id}
+    if user.get("role") != "admin":
+        query["userId"] = user["user_id"]
+    result = await trips_collection.delete_one(query)
+    return result.deleted_count > 0
+
+
+async def get_admin_overview() -> Dict[str, Any]:
+    if use_demo_fallback:
+        users = [_clone_json(doc) for doc in fallback_store["users"]]
+        trips = [_clone_json(doc) for doc in fallback_store["trips"]]
+        ordered_users = sorted(
+            users,
+            key=lambda user: _to_datetime(user.get("createdAt")) or datetime.min.replace(tzinfo=timezone.utc),
+            reverse=True,
+        )
+        ordered_trips = sorted(
+            trips,
+            key=lambda trip: _to_datetime(trip.get("updatedAt")) or datetime.min.replace(tzinfo=timezone.utc),
+            reverse=True,
+        )
+        return {
+            "users": [_serialize_user(doc) for doc in ordered_users],
+            "trips": [_serialize_trip(doc) for doc in ordered_trips],
+            "counts": {
+                "users": len(ordered_users),
+                "trips": len(ordered_trips),
+            },
+        }
+    users = await users_collection.find({}, {"password_hash": 0}).sort("createdAt", -1).to_list(length=None)
+    trips = await trips_collection.find({}).sort("updatedAt", -1).to_list(length=None)
+    return {
+        "users": [_serialize_user(doc) for doc in users],
+        "trips": [_serialize_trip(doc) for doc in trips],
+        "counts": {
+            "users": len(users),
+            "trips": len(trips),
+        },
+    }

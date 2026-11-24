@@ -1,0 +1,525 @@
+name,city,province,country,latitude,longitude,category,popularity_score,rating,average_cost,is_famous,importance_level
+Faisal Mosque,Islamabad,Islamabad,Pakistan,33.7294,73.0372,historical,10.0,4.9,0,1,3
+Daman-e-Koh,Islamabad,Islamabad,Pakistan,33.7383,73.0544,scenic,9.0,4.6,50,1,2
+Pakistan Monument,Islamabad,Islamabad,Pakistan,33.6934,73.0683,historical,9.5,4.7,50,1,3
+Rawal Lake,Islamabad,Islamabad,Pakistan,33.7022,73.1251,park,8.5,4.5,100,1,2
+Margalla Hills National Park,Islamabad,Islamabad,Pakistan,33.7461,73.0238,park,9.0,4.8,0,1,3
+Lok Virsa Museum,Islamabad,Islamabad,Pakistan,33.6936,73.0685,historical,8.0,4.6,500,0,2
+Saidpur Village,Islamabad,Islamabad,Pakistan,33.7439,73.0645,urban,8.5,4.4,2000,1,2
+Centaurus Mall,Islamabad,Islamabad,Pakistan,33.7077,73.0501,urban,9.0,4.6,3000,1,2
+Ayub National Park,Rawalpindi,Punjab,Pakistan,33.5684,73.0841,park,7.5,4.2,200,0,1
+Raja Bazaar,Rawalpindi,Punjab,Pakistan,33.6127,73.0558,urban,8.0,4.1,1500,1,2
+Badshahi Mosque,Lahore,Punjab,Pakistan,31.5881,74.3092,historical,10.0,4.9,0,1,3
+Lahore Fort,Lahore,Punjab,Pakistan,31.5878,74.3142,historical,9.8,4.8,500,1,3
+Minar-e-Pakistan,Lahore,Punjab,Pakistan,31.5925,74.3095,historical,9.5,4.6,100,1,3
+Shalimar Gardens,Lahore,Punjab,Pakistan,31.5858,74.382,park,8.5,4.5,200,1,2
+Lahore Zoo,Lahore,Punjab,Pakistan,31.5562,74.3259,park,8.0,4.3,300,1,2
+Walled City of Lahore,Lahore,Punjab,Pakistan,31.5831,74.3138,urban,9.0,4.7,1000,1,3
+Jilani Park,Rawalpindi,Punjab,Pakistan,31.5422,74.3353,park,7.0,4.4,100,0,1
+Data Darbar,Lahore,Punjab,Pakistan,31.5786,74.3051,historical,8.5,4.6,0,1,2
+Wazir Khan Mosque,Lahore,Punjab,Pakistan,31.583,74.3235,historical,8.8,4.8,0,1,2
+Tomb of Jahangir,Lahore,Punjab,Pakistan,31.6225,74.3032,historical,8.2,4.5,500,1,2
+Noor Mahal,Bahawalpur,Punjab,Pakistan,29.3781,71.6946,historical,8.5,4.7,300,1,2
+Derawar Fort,Bahawalpur,Punjab,Pakistan,28.7675,71.3325,historical,9.0,4.8,500,1,3
+Tomb of Shah Rukn-e-Alam,Multan,Punjab,Pakistan,30.1983,71.4705,historical,8.5,4.8,0,1,2
+Multan Fort,Multan,Punjab,Pakistan,30.198,71.469,historical,7.8,4.4,100,0,1
+Harappa Ruins,Sahiwal,Punjab,Pakistan,30.63,72.8631,historical,8.5,4.5,500,1,2
+Rohtas Fort,Jhelum,Punjab,Pakistan,32.975,73.5786,historical,8.8,4.7,200,1,2
+Katas Raj Temples,Chakwal,Punjab,Pakistan,32.7366,72.95,historical,8.5,4.6,200,1,2
+Khewra Salt Mine,Khewra,Punjab,Pakistan,32.6475,73.0116,attraction,9.2,4.7,600,1,3
+Changa Manga,Mianwali,Punjab,Pakistan,31.0827,73.9705,park,7.5,4.2,200,0,1
+Clock Tower,Faisalabad,Punjab,Pakistan,31.4187,73.0791,urban,8.0,4.4,0,1,2
+Ghanta Ghar,Multan,Punjab,Pakistan,30.1994,71.4725,urban,7.8,4.3,0,0,1
+Mazar-e-Quaid,Karachi,Sindh,Pakistan,24.8746,67.041,historical,10.0,4.8,0,1,3
+Clifton Beach,Karachi,Sindh,Pakistan,24.7994,67.0313,scenic,9.5,4.3,200,1,3
+Mohatta Palace,Karachi,Sindh,Pakistan,24.8145,67.0328,historical,8.5,4.6,500,1,2
+Frere Hall,Karachi,Sindh,Pakistan,24.8475,67.0314,historical,8.0,4.5,300,0,2
+Empress Market,Karachi,Sindh,Pakistan,24.8624,67.0256,urban,8.0,4.2,1500,1,2
+Port Grand,Karachi,Sindh,Pakistan,24.8407,66.9944,urban,8.8,4.4,1500,1,2
+Churna Island,Karachi,Sindh,Pakistan,24.8966,66.6006,scenic,8.5,4.7,4000,1,2
+Hawke's Bay Beach,Karachi,Sindh,Pakistan,24.8368,66.8647,scenic,8.5,4.4,500,1,2
+Makli Necropolis,Thatta,Sindh,Pakistan,24.749,67.9004,historical,8.8,4.6,200,1,2
+Shah Jahan Mosque,Thatta,Sindh,Pakistan,24.747,67.9254,historical,8.5,4.7,0,1,2
+Keenjhar Lake,Thatta,Sindh,Pakistan,24.9392,68.0416,scenic,8.0,4.4,1000,0,2
+Gorakh Hill,Karachi,Sindh,Pakistan,26.8642,67.1492,scenic,8.2,4.5,5000,1,2
+Ranikot Fort,Jamshoro,Sindh,Pakistan,25.8911,67.8997,historical,8.5,4.6,2000,1,2
+Mohenjo-Daro,Larkana,Sindh,Pakistan,27.3292,68.1388,historical,9.5,4.8,500,1,3
+Shrine of Lal Shahbaz Qalandar,Sehwan,Sindh,Pakistan,26.4253,67.8631,historical,9.0,4.7,0,1,3
+Faiz Mahal,Khairpur,Sindh,Pakistan,27.5342,68.7562,historical,8.2,4.6,300,1,2
+Bala Hisar Fort,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0132,71.5647,historical,8.5,4.5,200,1,2
+Qissa Khawani Bazaar,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0105,71.5661,urban,8.8,4.4,2000,1,2
+Mahabat Khan Mosque,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0108,71.5724,historical,8.2,4.7,0,1,2
+Islamia College,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9961,71.4744,historical,8.0,4.6,0,0,2
+Lake Saiful Muluk,Naran,Khyber Pakhtunkhwa,Pakistan,34.8736,73.6936,scenic,10.0,4.8,2000,1,3
+Babusar Pass,Naran,Khyber Pakhtunkhwa,Pakistan,35.15,74.05,scenic,9.5,4.8,1000,1,3
+Lulusar Lake,Naran,Khyber Pakhtunkhwa,Pakistan,35.0833,73.9333,scenic,9.0,4.7,500,1,3
+Shogran Valley,Kaghan,Khyber Pakhtunkhwa,Pakistan,34.6292,73.4667,scenic,9.0,4.7,3000,1,3
+Siri Paye,Shogran,Khyber Pakhtunkhwa,Pakistan,34.6167,73.4833,scenic,8.8,4.6,2500,1,2
+Kalam Valley,Swat,Khyber Pakhtunkhwa,Pakistan,35.4851,72.5818,scenic,9.5,4.8,2000,1,3
+Malam Jabba,Swat,Khyber Pakhtunkhwa,Pakistan,34.7981,72.5722,scenic,9.2,4.6,3000,1,3
+Mahodand Lake,Kalam,Khyber Pakhtunkhwa,Pakistan,35.7119,72.63,scenic,8.8,4.7,2500,1,2
+Kumrat Valley,Dir,Khyber Pakhtunkhwa,Pakistan,35.5333,72.2167,scenic,9.0,4.8,2000,1,3
+Chitral Fort,Chitral,Khyber Pakhtunkhwa,Pakistan,35.85,71.7833,historical,7.5,4.4,500,0,1
+Kalash Valley,Chitral,Khyber Pakhtunkhwa,Pakistan,35.6667,71.7,scenic,9.0,4.8,3000,1,3
+Galiyat,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.0333,73.4,scenic,8.5,4.5,1500,1,2
+Nathiagali,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.0667,73.3833,scenic,9.0,4.6,2000,1,3
+Ayubia National Park,Ayubia,Khyber Pakhtunkhwa,Pakistan,34.025,73.4,park,8.5,4.5,500,1,2
+Attabad Lake,Kaghan,Gilgit-Baltistan,Pakistan,36.3167,74.8667,scenic,10.0,4.9,2000,1,3
+Baltit Fort,Hunza,Gilgit-Baltistan,Pakistan,36.3264,74.6683,historical,9.5,4.8,800,1,3
+Altit Fort,Hunza,Gilgit-Baltistan,Pakistan,36.3139,74.6833,historical,9.0,4.7,600,1,3
+Eagle's Nest,Hunza,Gilgit-Baltistan,Pakistan,36.34,74.67,scenic,9.2,4.8,1500,1,3
+Passu Cones,Passu,Gilgit-Baltistan,Pakistan,36.4667,74.8833,scenic,9.5,4.9,500,1,3
+Khunjerab Pass,Sost,Gilgit-Baltistan,Pakistan,36.85,75.4333,scenic,9.8,4.8,2000,1,3
+Fairy Meadows,Kaghan,Gilgit-Baltistan,Pakistan,35.3833,74.5833,scenic,9.5,4.7,5000,1,3
+Nanga Parbat Base Camp,Chilas,Gilgit-Baltistan,Pakistan,35.2333,74.5833,scenic,9.0,4.8,8000,1,3
+Deosai National Park,Astore,Gilgit-Baltistan,Pakistan,35.05,75.4667,park,9.5,4.9,3000,1,3
+Shangrila Resort,Skardu,Gilgit-Baltistan,Pakistan,35.3417,75.4611,scenic,9.2,4.6,5000,1,3
+Upper Kachura Lake,Skardu,Gilgit-Baltistan,Pakistan,35.35,75.45,scenic,8.8,4.7,1000,1,2
+Satpara Lake,Skardu,Gilgit-Baltistan,Pakistan,35.2167,75.6333,scenic,8.5,4.6,500,1,2
+Shigar Valley,Skardu,Gilgit-Baltistan,Pakistan,35.4333,75.7333,scenic,8.8,4.7,2000,1,2
+Shigar Fort,Skardu,Gilgit-Baltistan,Pakistan,35.4222,75.7417,historical,8.5,4.6,1000,1,2
+Khaplu Fort,Khaplu,Gilgit-Baltistan,Pakistan,35.15,76.3333,historical,8.2,4.6,1000,1,2
+Manthokha Waterfall,Skardu,Gilgit-Baltistan,Pakistan,35.2333,75.8,scenic,8.5,4.5,500,0,2
+K2 Base Camp,Skardu,Gilgit-Baltistan,Pakistan,35.8833,76.5167,scenic,9.5,4.9,20000,1,3
+Hanna Lake,Quetta,Balochistan,Pakistan,30.25,67.1667,scenic,8.5,4.4,500,1,2
+Ziarat Residency,Ziarat,Balochistan,Pakistan,30.3833,67.7333,historical,9.0,4.7,500,1,3
+Princess of Hope,Lasbela,Balochistan,Pakistan,25.4333,65.5167,scenic,9.0,4.8,1000,1,3
+Hingol National Park,Lasbela,Balochistan,Pakistan,25.5,65.5,park,9.2,4.7,500,1,3
+Kund Malir Beach,Lasbela,Balochistan,Pakistan,25.4,65.45,scenic,9.0,4.8,1000,1,3
+Astola Island,Gwadar,Balochistan,Pakistan,25.1167,63.85,scenic,8.5,4.7,5000,1,2
+Gwadar Port,Gwadar,Balochistan,Pakistan,25.1167,62.3333,urban,8.5,4.4,500,1,2
+Moola Chotok,Khuzdar,Balochistan,Pakistan,28.1167,67.1333,scenic,8.8,4.7,3000,1,2
+Bolan Pass,Khuzdar,Balochistan,Pakistan,29.75,67.5833,scenic,7.5,4.3,1000,0,1
+Pishin Valley,Pishin,Balochistan,Pakistan,30.5833,67.0,scenic,7.5,4.2,1000,0,1
+Gadani Beach,Lasbela,Balochistan,Pakistan,25.0167,66.7333,scenic,8.0,4.3,500,1,2
+Makran Coastal Highway,Gwadar,Balochistan,Pakistan,25.4,64.0,scenic,9.5,4.8,2000,1,3
+Jiwani Beach,Gwadar,Balochistan,Pakistan,25.05,61.75,scenic,8.5,4.6,1000,1,2
+Neelum Valley,Muzaffarabad,Azad Kashmir,Pakistan,34.5833,73.9,scenic,9.5,4.8,3000,1,3
+Ratti Gali Lake,Neelum,Azad Kashmir,Pakistan,34.8333,74.05,scenic,9.0,4.7,2000,1,3
+Arang Kel,Neelum,Azad Kashmir,Pakistan,34.8333,74.3333,scenic,8.8,4.8,1500,1,2
+Shounter Lake,Neelum,Azad Kashmir,Pakistan,34.8667,74.5333,scenic,8.5,4.6,2000,1,2
+Pir Chinasi,Neelum,Azad Kashmir,Pakistan,34.3833,73.5333,scenic,9.0,4.7,1000,1,3
+Banjosa Lake,Rawalakot,Azad Kashmir,Pakistan,33.8,73.8167,scenic,8.8,4.6,1000,1,2
+Toli Pir,Rawalakot,Azad Kashmir,Pakistan,33.8833,73.8,scenic,8.5,4.5,800,1,2
+Ramkot Fort,Muzaffarabad,Azad Kashmir,Pakistan,33.2333,73.65,historical,8.0,4.4,500,1,2
+Mangla Dam,Mirpur,Azad Kashmir,Pakistan,33.1333,73.65,scenic,8.5,4.5,1000,1,2
+Ganga Choti,Bagh,Azad Kashmir,Pakistan,34.05,73.8,scenic,8.2,4.6,1500,0,2
+Uch Sharif,Bahawalpur,Punjab,Pakistan,29.2333,71.0667,historical,8.5,4.7,200,1,2
+Cholistan Desert,Bahawalpur,Punjab,Pakistan,28.5,71.0,scenic,8.8,4.6,2000,1,2
+Tombs of Talpur Mirs,Hyderabad,Sindh,Pakistan,25.3833,68.3667,historical,7.5,4.3,100,0,1
+Haleji Lake,Thatta,Sindh,Pakistan,24.7833,67.7667,scenic,7.8,4.4,500,0,1
+Manchar Lake,Thatta,Sindh,Pakistan,26.4167,67.6667,scenic,8.0,4.5,800,1,2
+Gojal Valley,Hunza,Gilgit-Baltistan,Pakistan,36.6833,74.8167,scenic,9.2,4.8,2500,1,3
+Rakaposhi View Point,Ghizer,Gilgit-Baltistan,Pakistan,36.1667,74.4667,scenic,9.5,4.9,1000,1,3
+Phander Lake,Ghizer,Gilgit-Baltistan,Pakistan,36.1667,72.95,scenic,9.0,4.8,1500,1,3
+Minapin Village,Nagar,Gilgit-Baltistan,Pakistan,36.2333,74.5333,scenic,8.5,4.6,1200,0,2
+Naltar Valley,Nagar,Gilgit-Baltistan,Pakistan,36.1333,74.1833,scenic,9.2,4.8,2000,1,3
+Rama Lake,Astore,Gilgit-Baltistan,Pakistan,35.35,74.8,scenic,9.0,4.7,1500,1,3
+Urak Valley,Quetta,Balochistan,Pakistan,30.2667,67.1667,scenic,8.2,4.5,800,0,2
+Ormara Beach,Gwadar,Balochistan,Pakistan,25.2,64.6333,scenic,8.8,4.7,2000,1,2
+Sajikot Waterfall,Abbottabad,Khyber Pakhtunkhwa,Pakistan,33.9833,73.25,scenic,8.5,4.6,500,0,2
+Umbrella Waterfall,Abbottabad,Khyber Pakhtunkhwa,Pakistan,33.9667,73.2333,scenic,8.8,4.7,500,1,2
+Thandiani,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.2333,73.35,scenic,8.5,4.5,1500,1,2
+Shandur Pass,Chitral,Khyber Pakhtunkhwa,Pakistan,36.0833,72.5333,scenic,9.2,4.8,3000,1,3
+Garam Chashma,Chitral,Khyber Pakhtunkhwa,Pakistan,35.9833,71.55,scenic,8.5,4.6,2000,0,2
+Tarbela Dam,Haripur,Khyber Pakhtunkhwa,Pakistan,34.0833,72.8,scenic,8.2,4.5,500,1,2
+Khanpur Dam,Haripur,Khyber Pakhtunkhwa,Pakistan,33.8,72.9333,scenic,8.5,4.6,1500,1,2
+F-9 Park (Fatima Jinnah Park),Islamabad,Islamabad,Pakistan,33.7018,73.018,park,9.5,4.6,0,1,3
+Shakarparian Park,Islamabad,Islamabad,Pakistan,33.6881,73.0725,park,9.0,4.5,100,1,3
+Trail 3 Margalla Hills,Islamabad,Islamabad,Pakistan,33.7423,73.0645,scenic,9.5,4.8,0,1,3
+Trail 5 Margalla Hills,Islamabad,Islamabad,Pakistan,33.7441,73.0805,scenic,9.2,4.7,0,1,3
+Lake View Park,Islamabad,Islamabad,Pakistan,33.7042,73.1251,park,8.8,4.4,200,1,2
+Monal Restaurant Viewpoint,Islamabad,Islamabad,Pakistan,33.7554,73.056,scenic,9.8,4.7,3000,1,3
+Safa Gold Mall,Islamabad,Islamabad,Pakistan,33.7258,73.0558,urban,8.0,4.3,2000,0,2
+Giga Mall,Islamabad,Islamabad,Pakistan,33.5286,73.1601,urban,8.5,4.5,3000,1,2
+Islamabad Zoo,Islamabad,Islamabad,Pakistan,33.7214,73.0515,attraction,7.0,4.0,100,0,1
+Rose and Jasmine Garden,Islamabad,Islamabad,Pakistan,33.6934,73.0769,park,8.0,4.4,50,1,2
+Jinnah Super Market,Islamabad,Islamabad,Pakistan,33.721,73.0566,urban,8.8,4.3,2000,1,2
+Super Market F-6,Islamabad,Islamabad,Pakistan,33.7314,73.0744,urban,8.5,4.4,2000,1,2
+Kohsar Market,Islamabad,Islamabad,Pakistan,33.7256,73.0722,urban,8.2,4.5,3000,0,2
+Blue Area,Islamabad,Islamabad,Pakistan,33.7126,73.0559,urban,8.9,4.3,1500,1,2
+Saddar Bazaar,Rawalpindi,Punjab,Pakistan,33.5936,73.0456,urban,9.0,4.2,1000,1,3
+Rawalpindi Food Street,Rawalpindi,Punjab,Pakistan,33.6267,73.07,urban,8.5,4.5,1500,1,2
+Commercial Market,Rawalpindi,Punjab,Pakistan,33.6395,73.0768,urban,8.8,4.4,1500,1,2
+Nawaz Sharif Park,Rawalpindi,Punjab,Pakistan,33.6425,73.0805,park,7.5,4.2,50,0,1
+Jinnah Park,Rawalpindi,Punjab,Pakistan,33.6385,73.0858,park,8.0,4.3,50,1,2
+Liberty Market,Lahore,Punjab,Pakistan,31.5113,74.3444,urban,9.5,4.5,2000,1,3
+Anarkali Bazaar,Lahore,Punjab,Pakistan,31.5694,74.3075,urban,9.8,4.4,1000,1,3
+M.M. Alam Road,Lahore,Punjab,Pakistan,31.5173,74.3503,urban,9.0,4.6,3000,1,3
+Fort Road Food Street,Lahore,Punjab,Pakistan,31.5866,74.3113,urban,9.8,4.7,2500,1,3
+Gawalmandi Food Street,Lahore,Punjab,Pakistan,31.568,74.3175,urban,9.0,4.5,1500,1,3
+Emporium Mall,Lahore,Punjab,Pakistan,31.4682,74.2644,urban,9.5,4.6,3000,1,3
+Packages Mall,Lahore,Punjab,Pakistan,31.4501,74.3524,urban,9.2,4.6,3000,1,3
+Mall of Lahore,Lahore,Punjab,Pakistan,31.5284,74.3855,urban,8.0,4.4,2500,0,2
+Model Town Park,Lahore,Punjab,Pakistan,31.482,74.3235,park,8.8,4.5,100,1,2
+Bagh-e-Jinnah (Lawrence Gardens),Lahore,Punjab,Pakistan,31.554,74.3312,park,9.0,4.6,0,1,3
+Greater Iqbal Park,Lahore,Punjab,Pakistan,31.5912,74.3113,park,9.5,4.7,100,1,3
+Gulshan-e-Iqbal Park,Lahore,Punjab,Pakistan,31.5173,74.2908,park,8.5,4.3,50,1,2
+Joyland Lahore,Lahore,Punjab,Pakistan,31.5385,74.3644,attraction,8.5,4.4,1500,1,2
+Sindbad's Wonderland,Lahore,Punjab,Pakistan,31.538,74.365,attraction,8.2,4.3,1500,0,2
+Lahore Museum,Lahore,Punjab,Pakistan,31.5684,74.3081,historical,9.0,4.6,500,1,3
+Sozo Water Park,Lahore,Punjab,Pakistan,31.5835,74.4552,attraction,8.0,4.2,1500,1,2
+Jallo Park,Lahore,Punjab,Pakistan,31.5817,74.4691,park,8.5,4.3,200,1,2
+Oasis Golf and Aqua Resort,Lahore,Punjab,Pakistan,31.4244,74.0722,attraction,8.8,4.5,3000,1,2
+Kamran's Baradari,Lahore,Punjab,Pakistan,31.5992,74.2886,historical,7.5,4.3,200,0,1
+Ichhra Bazaar,Lahore,Punjab,Pakistan,31.5298,74.3168,urban,8.5,4.2,1000,1,2
+Panorama Shopping Centre,Lahore,Punjab,Pakistan,31.5594,74.3245,urban,7.8,4.1,1500,0,1
+WAPDA Town Park,Lahore,Punjab,Pakistan,31.4258,74.2644,park,7.5,4.4,0,0,1
+DHA Cinema,Lahore,Punjab,Pakistan,31.4784,74.3804,urban,7.5,4.3,1000,0,1
+Dolmen Mall Clifton,Karachi,Sindh,Pakistan,24.8105,67.0315,urban,9.5,4.7,3000,1,3
+LuckyOne Mall,Karachi,Sindh,Pakistan,24.945,67.0854,urban,9.2,4.6,3000,1,3
+Ocean Mall,Karachi,Sindh,Pakistan,24.8252,67.0336,urban,8.8,4.5,2500,1,2
+Do Darya,Karachi,Sindh,Pakistan,24.757,67.0583,urban,9.8,4.7,4000,1,3
+Burns Road Food Street,Karachi,Sindh,Pakistan,24.8561,67.0163,urban,9.5,4.6,1500,1,3
+Hussainabad Food Street,Karachi,Sindh,Pakistan,24.9125,67.0655,urban,8.8,4.5,1000,1,2
+Tariq Road,Karachi,Sindh,Pakistan,24.8722,67.0638,urban,9.0,4.4,2000,1,3
+Zainab Market,Karachi,Sindh,Pakistan,24.8552,67.0223,urban,8.5,4.2,1500,1,2
+Sea View Beach,Karachi,Sindh,Pakistan,24.8016,67.0392,scenic,9.8,4.4,500,1,3
+French Beach,Karachi,Sindh,Pakistan,24.8517,66.8375,scenic,8.5,4.5,1000,1,2
+Turtle Beach,Karachi,Sindh,Pakistan,24.845,66.8486,scenic,8.5,4.5,1000,0,2
+Sandspit Beach,Karachi,Sindh,Pakistan,24.8389,66.8925,scenic,8.8,4.4,500,1,2
+Bagh Ibne Qasim,Karachi,Sindh,Pakistan,24.8091,67.0278,park,8.5,4.5,0,1,2
+Safari Park,Karachi,Sindh,Pakistan,24.9186,67.1086,park,8.5,4.3,200,1,2
+Hill Park,Karachi,Sindh,Pakistan,24.8722,67.0789,park,8.0,4.2,100,1,2
+Askari Amusement Park,Karachi,Sindh,Pakistan,24.9011,67.0461,attraction,7.5,4.1,1000,0,1
+National Museum of Pakistan,Karachi,Sindh,Pakistan,24.8516,67.0182,historical,8.8,4.6,200,1,2
+PAF Museum,Karachi,Sindh,Pakistan,24.8744,67.0903,historical,9.0,4.7,300,1,3
+Maritime Museum,Karachi,Sindh,Pakistan,24.8803,67.0944,historical,9.0,4.7,300,1,3
+Karachi Zoo,Karachi,Sindh,Pakistan,24.8763,67.02,park,8.0,4.0,200,1,2
+Chaukhandi Tombs,Karachi,Sindh,Pakistan,24.8624,67.2721,historical,8.2,4.5,100,1,2
+Tooba Mosque,Karachi,Sindh,Pakistan,24.8361,67.0544,historical,8.5,4.6,0,1,2
+Manora Island,Karachi,Sindh,Pakistan,24.7958,66.9767,scenic,8.8,4.5,1500,1,2
+Namak Mandi,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0117,71.5644,urban,9.5,4.7,2000,1,3
+Peshawar Museum,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0094,71.5544,historical,9.0,4.6,200,1,3
+Chowk Yadgar,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0111,71.5714,historical,8.5,4.5,0,1,2
+Sethi House,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0089,71.5753,historical,8.8,4.7,500,1,2
+Khyber Pass,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.1031,71.1092,scenic,9.5,4.8,1000,1,3
+Tatara Park,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9781,71.4428,park,8.0,4.4,100,0,2
+Bagh-e-Naran,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9767,71.455,park,8.2,4.5,100,1,2
+Jamrud Fort,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0031,71.3789,historical,8.5,4.6,200,1,2
+Deans City Centre,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0075,71.5458,urban,8.0,4.3,2000,0,2
+Shahi Bagh,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.02,71.5714,park,7.8,4.2,50,0,1
+Khyber Bazaar,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0075,71.5583,urban,8.5,4.3,1500,1,2
+Serena Hotel Quetta Viewpoint,Quetta,Balochistan,Pakistan,30.1989,67.0142,urban,8.5,4.6,3000,1,2
+Askari Park Quetta,Quetta,Balochistan,Pakistan,30.2217,67.0144,park,8.0,4.4,100,1,2
+Liaquat Park Quetta,Quetta,Balochistan,Pakistan,30.1956,67.0094,park,7.5,4.2,50,0,1
+Liaquat Bazaar,Quetta,Balochistan,Pakistan,30.1925,67.0083,urban,8.5,4.3,1500,1,2
+Quetta Archaeological Museum,Quetta,Balochistan,Pakistan,30.1872,67.0039,historical,8.0,4.5,200,1,2
+Bacha Khan Chowk,Quetta,Balochistan,Pakistan,30.1931,67.005,urban,8.2,4.2,1000,1,2
+Hazarganji Chiltan National Park,Quetta,Balochistan,Pakistan,30.0811,66.8647,park,8.5,4.5,300,1,2
+Millennium Mall Quetta,Quetta,Balochistan,Pakistan,30.1958,67.0169,urban,7.8,4.3,2000,0,1
+Kandahari Bazaar,Quetta,Balochistan,Pakistan,30.1914,67.0036,urban,8.8,4.4,1500,1,2
+Sleeping Beauty Mountain Viewpoint,Quetta,Balochistan,Pakistan,30.22,67.05,scenic,8.5,4.6,0,1,2
+D Ground Park,Faisalabad,Punjab,Pakistan,31.4017,73.1114,park,8.0,4.3,50,1,2
+Lyallpur Galleria,Faisalabad,Punjab,Pakistan,31.4111,73.1144,urban,8.5,4.5,2000,1,2
+Sindbad Amusement Park,Faisalabad,Punjab,Pakistan,31.4167,73.0833,attraction,7.5,4.1,1000,0,1
+Iqbal Stadium,Faisalabad,Punjab,Pakistan,31.4314,73.0825,urban,8.0,4.4,500,1,2
+Chenab Club,Faisalabad,Punjab,Pakistan,31.425,73.0881,urban,8.2,4.5,3000,1,2
+Garrison Park,Multan,Punjab,Pakistan,30.1833,71.45,park,7.8,4.3,100,0,1
+Multan Arts Council,Multan,Punjab,Pakistan,30.1917,71.4667,historical,7.5,4.4,100,0,1
+Qasim Bela,Multan,Punjab,Pakistan,30.1667,71.4333,park,7.0,4.2,50,0,1
+Shah Shams Park,Multan,Punjab,Pakistan,30.2083,71.4833,park,8.0,4.4,100,1,2
+Hussain Agahi Bazaar,Multan,Punjab,Pakistan,30.1972,71.4722,urban,9.0,4.5,1500,1,3
+Fatima Jinnah Park Sector F-9,Islamabad,Islamabad,Pakistan,33.7015,73.0185,park,9.0,4.6,0,1,3
+Shah Allah Ditta Caves,Islamabad,Islamabad,Pakistan,33.7197,72.9158,historical,8.5,4.5,100,1,2
+Japanese Children Park,Islamabad,Islamabad,Pakistan,33.7153,73.0531,park,8.0,4.4,50,0,2
+Aabpara Market,Islamabad,Islamabad,Pakistan,33.7167,73.0833,urban,8.5,4.3,1500,1,2
+Karachi Company,Islamabad,Islamabad,Pakistan,33.6875,73.0331,urban,8.2,4.2,1000,1,2
+F-6 Markaz (Super Market),Islamabad,Islamabad,Pakistan,33.7317,73.0747,urban,9.0,4.4,2500,1,3
+F-8 Markaz,Islamabad,Islamabad,Pakistan,33.7119,73.0372,urban,8.5,4.3,2000,0,2
+F-10 Markaz,Islamabad,Islamabad,Pakistan,33.6933,73.0169,urban,8.5,4.4,1500,0,2
+F-11 Markaz,Islamabad,Islamabad,Pakistan,33.6842,72.9986,urban,8.6,4.5,2000,0,2
+G-9 Markaz (Karachi Company),Islamabad,Islamabad,Pakistan,33.6872,73.0336,urban,8.8,4.3,1000,1,2
+G-11 Markaz,Islamabad,Islamabad,Pakistan,33.6669,72.9972,urban,8.4,4.4,1500,0,2
+E-11 Markaz,Islamabad,Islamabad,Pakistan,33.6953,72.9803,urban,8.5,4.5,2000,0,2
+Melody Market,Islamabad,Islamabad,Pakistan,33.7114,73.0767,urban,8.3,4.2,1000,1,2
+Beverly Centre,Islamabad,Islamabad,Pakistan,33.7133,73.0567,urban,8.7,4.5,3000,1,2
+Kachnar Park,Islamabad,Islamabad,Pakistan,33.6653,73.0806,park,8.0,4.5,0,0,2
+Lake View Park Bird Aviary,Islamabad,Islamabad,Pakistan,33.7044,73.1256,attraction,8.2,4.4,200,0,2
+Rawalpindi Golf Club,Rawalpindi,Punjab,Pakistan,33.5833,73.0667,park,7.5,4.5,2000,0,1
+Army Museum Rawalpindi,Rawalpindi,Punjab,Pakistan,33.5933,73.0483,historical,8.8,4.8,300,1,2
+Liaquat Bagh,Rawalpindi,Punjab,Pakistan,33.6067,73.06,park,8.5,4.3,0,1,2
+Tench Bhatta,Rawalpindi,Punjab,Pakistan,33.5833,73.0333,urban,8.0,4.1,1000,0,2
+Moti Bazaar,Rawalpindi,Punjab,Pakistan,33.6133,73.0567,urban,8.5,4.2,800,1,2
+Lalkurti,Rawalpindi,Punjab,Pakistan,33.5783,73.0417,urban,7.8,4.0,1000,0,1
+Murree Road Shopping Area,Rawalpindi,Punjab,Pakistan,33.6167,73.0667,urban,8.5,4.3,1500,1,2
+Bahria Town Phase 4 Park,Rawalpindi,Punjab,Pakistan,33.5533,73.1117,park,8.0,4.5,0,0,2
+Bahria Town Phase 7 Food Street,Rawalpindi,Punjab,Pakistan,33.5267,73.1,urban,8.8,4.6,2000,1,2
+DHA Phase 1 Park,Islamabad,Islamabad,Pakistan,33.52,73.1333,park,7.8,4.4,0,0,1
+Amazon Mall,Islamabad,Islamabad,Pakistan,33.5367,73.15,urban,8.5,4.5,2000,0,2
+Mall of Islamabad,Islamabad,Islamabad,Pakistan,33.7117,73.0567,urban,8.2,4.3,2500,0,2
+Race Course Park,Lahore,Punjab,Pakistan,31.5417,74.3333,park,8.8,4.6,100,1,2
+Tariq Gardens,Lahore,Punjab,Pakistan,31.4333,74.25,park,7.5,4.3,0,0,1
+National History Museum,Lahore,Punjab,Pakistan,31.59,74.31,historical,8.5,4.7,300,1,2
+Fakir Khana Museum,Lahore,Punjab,Pakistan,31.5833,74.3167,historical,8.2,4.6,200,0,2
+Tomb of Asif Khan,Lahore,Punjab,Pakistan,31.62,74.3017,historical,8.0,4.4,100,0,2
+Shahi Hammam,Lahore,Punjab,Pakistan,31.5833,74.3217,historical,8.6,4.7,200,1,2
+Lahore Fort Picture Wall,Lahore,Punjab,Pakistan,31.5883,74.3133,historical,9.0,4.8,100,1,3
+Hazuri Bagh,Lahore,Punjab,Pakistan,31.5883,74.31,park,8.5,4.6,0,1,2
+Sunehri Mosque,Lahore,Punjab,Pakistan,31.5817,74.3183,historical,8.3,4.5,0,1,2
+Mochi Gate,Lahore,Punjab,Pakistan,31.5783,74.32,historical,8.0,4.3,0,1,2
+Delhi Gate,Lahore,Punjab,Pakistan,31.5833,74.325,historical,8.5,4.4,0,1,2
+Lahore Railway Station,Lahore,Punjab,Pakistan,31.5783,74.3383,historical,8.8,4.5,0,1,2
+General Post Office Lahore,Lahore,Punjab,Pakistan,31.5667,74.3117,historical,8.0,4.4,0,0,2
+Punjab University Old Campus,Lahore,Punjab,Pakistan,31.5667,74.3083,historical,8.2,4.5,0,0,2
+Tollington Market,Lahore,Punjab,Pakistan,31.5683,74.31,historical,8.0,4.3,0,0,2
+Hall Road,Lahore,Punjab,Pakistan,31.5633,74.32,urban,8.5,4.2,2000,1,2
+Mall Road,Lahore,Punjab,Pakistan,31.5583,74.3333,urban,9.2,4.5,2500,1,3
+Main Market Gulberg,Lahore,Punjab,Pakistan,31.5283,74.3467,urban,8.8,4.4,2000,1,2
+Ghalib Market,Lahore,Punjab,Pakistan,31.52,74.3467,urban,8.5,4.3,1500,0,2
+Mini Market Gulberg,Lahore,Punjab,Pakistan,31.535,74.3467,urban,8.2,4.2,1500,0,2
+Fortress Stadium,Lahore,Punjab,Pakistan,31.5333,74.3833,urban,9.0,4.5,2000,1,3
+Joyland Fortress,Lahore,Punjab,Pakistan,31.535,74.385,attraction,8.8,4.4,1500,1,2
+DHA Y Block Market,Lahore,Punjab,Pakistan,31.4783,74.3867,urban,9.2,4.6,3000,1,3
+DHA H Block Market,Lahore,Punjab,Pakistan,31.4733,74.3783,urban,8.5,4.4,2500,0,2
+DHA Z Block Market,Lahore,Punjab,Pakistan,31.47,74.3833,urban,8.8,4.5,2500,1,2
+Johar Town G1 Market,Lahore,Punjab,Pakistan,31.4667,74.2833,urban,8.6,4.3,1500,0,2
+Johar Town Expo Centre,Lahore,Punjab,Pakistan,31.4683,74.2633,urban,8.5,4.4,500,1,2
+WAPDA Town Main Boulevard,Lahore,Punjab,Pakistan,31.425,74.2667,urban,8.0,4.2,1500,0,2
+Pia Park,Lahore,Punjab,Pakistan,31.4333,74.2667,park,7.5,4.3,0,0,1
+Jallo Park Botanical Garden,Lahore,Punjab,Pakistan,31.5833,74.4717,park,8.2,4.4,100,0,2
+Bata Pur,Lahore,Punjab,Pakistan,31.5933,74.4667,urban,7.0,4.0,500,0,1
+Wagha Border,Lahore,Punjab,Pakistan,31.605,74.5733,attraction,9.5,4.8,0,1,3
+Mazar-e-Quaid Gardens,Karachi,Sindh,Pakistan,24.8733,67.04,park,9.0,4.7,0,1,3
+Clifton Beach Park,Karachi,Sindh,Pakistan,24.8,67.0333,park,8.5,4.4,100,1,2
+Saddar Bazar,Karachi,Sindh,Pakistan,24.8583,67.025,urban,9.2,4.3,1500,1,3
+Bolton Market,Karachi,Sindh,Pakistan,24.8517,66.9983,urban,8.8,4.2,1000,1,2
+Jodia Bazar,Karachi,Sindh,Pakistan,24.8533,66.995,urban,8.5,4.1,1000,1,2
+Lighthouse Market,Karachi,Sindh,Pakistan,24.855,67.005,urban,8.2,4.2,1000,0,2
+Arambagh Market,Karachi,Sindh,Pakistan,24.8567,67.0117,urban,8.0,4.1,1000,0,2
+Jama Cloth Market,Karachi,Sindh,Pakistan,24.8583,67.015,urban,8.5,4.2,1500,1,2
+Tariq Road Shopping Area,Karachi,Sindh,Pakistan,24.8733,67.065,urban,9.5,4.5,2500,1,3
+Bahadurabad Food Street,Karachi,Sindh,Pakistan,24.8817,67.07,urban,9.2,4.6,1500,1,3
+Sindhi Muslim Food Street,Karachi,Sindh,Pakistan,24.8683,67.0517,urban,9.0,4.5,1500,1,3
+Boat Basin,Karachi,Sindh,Pakistan,24.815,67.0267,urban,9.2,4.5,2000,1,3
+Port Grand Food Street,Karachi,Sindh,Pakistan,24.8417,66.995,urban,9.5,4.6,2500,1,3
+Kemari,Karachi,Sindh,Pakistan,24.8167,66.9833,urban,8.5,4.3,1000,1,2
+Atrium Mall,Karachi,Sindh,Pakistan,24.8583,67.0317,urban,8.8,4.5,2500,1,2
+The Forum Mall,Karachi,Sindh,Pakistan,24.8233,67.0317,urban,8.5,4.4,2500,0,2
+Millennium Mall,Karachi,Sindh,Pakistan,24.9017,67.1133,urban,8.2,4.3,2000,0,2
+Saima Square One Mall,Karachi,Sindh,Pakistan,24.9017,67.115,urban,8.0,4.2,2000,0,2
+Nuplex Cinemas,Karachi,Sindh,Pakistan,24.8117,67.065,urban,8.5,4.5,1500,1,2
+Arena Cinema,Karachi,Sindh,Pakistan,24.8967,67.0867,urban,8.2,4.4,1500,0,2
+Nipa Chowrangi,Karachi,Sindh,Pakistan,24.9167,67.0967,urban,8.5,4.2,1000,1,2
+Hassan Square,Karachi,Sindh,Pakistan,24.9083,67.0817,urban,8.2,4.1,1000,0,2
+Expo Centre Karachi,Karachi,Sindh,Pakistan,24.9067,67.0733,urban,8.8,4.4,500,1,2
+National Stadium Karachi,Karachi,Sindh,Pakistan,24.8967,67.0817,urban,9.0,4.5,500,1,3
+Agha Khan University Hospital Park,Karachi,Sindh,Pakistan,24.8933,67.075,park,8.0,4.6,0,0,2
+KMC Sports Complex,Karachi,Sindh,Pakistan,24.8767,67.045,urban,7.5,4.2,100,0,1
+Jehangir Kothari Parade,Karachi,Sindh,Pakistan,24.8083,67.0283,historical,8.5,4.5,0,1,2
+Karachi Port Trust Building,Karachi,Sindh,Pakistan,24.84,66.9933,historical,8.8,4.6,0,1,2
+Merewether Clock Tower,Karachi,Sindh,Pakistan,24.8483,66.9967,historical,8.6,4.5,0,1,2
+DJ Science College,Karachi,Sindh,Pakistan,24.855,67.015,historical,8.0,4.5,0,0,2
+St. Patrick's Cathedral,Karachi,Sindh,Pakistan,24.86,67.0317,historical,8.8,4.7,0,1,2
+Mall Road Murree,Murree,Punjab,Pakistan,33.9067,73.3883,urban,9.8,4.5,2000,1,3
+Pindi Point,Murree,Punjab,Pakistan,33.9017,73.3867,scenic,9.2,4.4,500,1,3
+Kashmir Point,Murree,Punjab,Pakistan,33.9133,73.3983,scenic,9.5,4.6,500,1,3
+Patriata (New Murree),Murree,Punjab,Pakistan,33.8833,73.45,scenic,9.6,4.7,1500,1,3
+Bhurban,Murree,Punjab,Pakistan,33.95,73.45,scenic,9.0,4.8,3000,1,3
+GPO Murree,Murree,Punjab,Pakistan,33.9083,73.39,historical,8.5,4.4,0,1,2
+Ilyasi Mosque,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.15,73.2333,historical,8.8,4.6,0,1,2
+Shimla Hill,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.1533,73.2083,scenic,8.5,4.5,200,1,2
+Jalal Baba Amusement Park,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.1467,73.2167,park,8.0,4.3,100,0,2
+Harnoi Lake,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.1167,73.2833,scenic,8.6,4.5,500,1,2
+Lady Garden,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.1517,73.22,park,7.5,4.2,50,0,1
+Iqbal Manzil,Sialkot,Punjab,Pakistan,32.4933,74.5267,historical,9.2,4.8,100,1,3
+Sialkot Fort,Sialkot,Punjab,Pakistan,32.4967,74.53,historical,8.5,4.4,100,1,2
+Sialkot Clock Tower,Sialkot,Punjab,Pakistan,32.495,74.5283,historical,8.2,4.3,0,0,2
+Cantt View Park,Sialkot,Punjab,Pakistan,32.5167,74.5333,park,7.8,4.4,50,0,1
+Marala Headworks,Sialkot,Punjab,Pakistan,32.6667,74.4667,scenic,8.8,4.6,500,1,2
+Gujranwala Food Street,Gujranwala,Punjab,Pakistan,32.1667,74.1833,urban,9.0,4.7,1500,1,3
+Estcourt Clock Tower,Gujranwala,Punjab,Pakistan,32.1617,74.1867,historical,8.2,4.4,0,1,2
+Jinnah Stadium,Gujranwala,Punjab,Pakistan,32.165,74.19,urban,7.8,4.2,500,0,1
+Bombay Bakery,Hyderabad,Sindh,Pakistan,25.3933,68.3733,urban,9.5,4.8,1000,1,3
+Resham Gali,Hyderabad,Sindh,Pakistan,25.3917,68.3717,urban,8.8,4.4,1500,1,2
+Pacco Qillo,Hyderabad,Sindh,Pakistan,25.3967,68.37,historical,8.5,4.3,100,1,2
+Sindh Museum,Hyderabad,Sindh,Pakistan,25.385,68.3617,historical,8.2,4.5,200,0,2
+Rani Bagh,Hyderabad,Sindh,Pakistan,25.3883,68.3683,park,8.0,4.2,50,0,2
+Sukkur Barrage,Sukkur,Sindh,Pakistan,27.6833,68.85,historical,9.2,4.7,200,1,3
+Lansdowne Bridge,Sukkur,Sindh,Pakistan,27.695,68.87,historical,8.8,4.6,0,1,2
+Sadh Belo,Sukkur,Sindh,Pakistan,27.7017,68.8683,historical,8.5,4.7,500,1,2
+Minaret of Masum Shah,Sukkur,Sindh,Pakistan,27.7033,68.8583,historical,8.2,4.4,100,1,2
+Lab-e-Mehran,Sukkur,Sindh,Pakistan,27.6983,68.865,park,8.6,4.5,100,1,2
+National Monument Museum,Islamabad,Islamabad,Pakistan,33.6935,73.0682,historical,8.7,4.6,200,1,2
+Margalla Hills Trail 6,Islamabad,Islamabad,Pakistan,33.7431,73.0725,scenic,8.2,4.5,0,0,2
+Islamabad Club,Islamabad,Islamabad,Pakistan,33.7025,73.0972,urban,8.0,4.5,5000,1,2
+Daman-e-Koh Park,Islamabad,Islamabad,Pakistan,33.738,73.0545,park,9.1,4.6,0,1,3
+F-9 Park F-10 Gate,Islamabad,Islamabad,Pakistan,33.6975,73.0135,park,8.5,4.5,0,0,2
+Jinnah Convention Centre,Islamabad,Islamabad,Pakistan,33.7145,73.1001,urban,8.0,4.4,0,1,2
+G-8 Markaz,Islamabad,Islamabad,Pakistan,33.6992,73.0456,urban,8.1,4.2,1500,0,2
+H-8 Markaz,Islamabad,Islamabad,Pakistan,33.6821,73.0543,urban,7.9,4.1,1000,0,1
+I-8 Markaz,Islamabad,Islamabad,Pakistan,33.6667,73.0655,urban,8.2,4.3,1200,0,2
+Chattar Park,Islamabad,Islamabad,Pakistan,33.7786,73.1812,park,8.5,4.3,500,1,2
+Raja Bazaar Food Street,Rawalpindi,Punjab,Pakistan,33.612,73.055,urban,8.6,4.4,800,1,2
+Saddar Food Street,Rawalpindi,Punjab,Pakistan,33.594,73.045,urban,8.5,4.3,1000,1,2
+Ayub Park Lake,Rawalpindi,Punjab,Pakistan,33.568,73.085,scenic,8.2,4.4,200,0,2
+Romi Park,Rawalpindi,Punjab,Pakistan,33.5785,73.0765,park,7.5,4.1,50,0,1
+Lalkurti Food Street,Rawalpindi,Punjab,Pakistan,33.578,73.041,urban,8.4,4.5,800,1,2
+DHA Phase 2 Central Park,Islamabad,Islamabad,Pakistan,33.518,73.141,park,8.0,4.5,0,0,2
+Bahria Town Phase 8 Statue of Liberty,Rawalpindi,Punjab,Pakistan,33.502,73.105,attraction,8.6,4.4,0,1,2
+Bahria Town Phase 8 Eiffel Tower,Rawalpindi,Punjab,Pakistan,33.5035,73.107,attraction,8.8,4.5,0,1,2
+Bagh-e-Jinnah Botanical Garden,Lahore,Punjab,Pakistan,31.5545,74.3315,park,8.8,4.6,0,1,2
+Lahore Zoo Safari,Lahore,Punjab,Pakistan,31.3833,74.2167,park,8.6,4.4,300,1,2
+Model Town Park Lake,Lahore,Punjab,Pakistan,31.4825,74.324,scenic,8.4,4.5,50,0,2
+Gulberg Galleria,Lahore,Punjab,Pakistan,31.5225,74.3485,urban,8.5,4.5,3000,1,2
+Xinhua Mall,Lahore,Punjab,Pakistan,31.517,74.351,urban,8.2,4.3,2500,0,2
+Gaddafi Stadium,Lahore,Punjab,Pakistan,31.5131,74.3319,urban,9.2,4.7,1000,1,3
+Alhamra Arts Council,Lahore,Punjab,Pakistan,31.5547,74.3344,urban,8.5,4.6,500,1,2
+Bahria Grand Mosque,Lahore,Punjab,Pakistan,31.3656,74.1878,historical,9.4,4.8,0,1,3
+Eiffel Tower Replica Lahore,Lahore,Punjab,Pakistan,31.3642,74.1845,attraction,9.0,4.6,200,1,3
+Cavalry Ground Market,Lahore,Punjab,Pakistan,31.5117,74.3683,urban,8.4,4.4,2000,1,2
+DHA Phase 5 Raya,Lahore,Punjab,Pakistan,31.46,74.41,urban,8.8,4.7,3500,1,2
+Lahore Canal Bank Road,Lahore,Punjab,Pakistan,31.53,74.34,scenic,8.5,4.5,0,1,2
+Samanabad Park,Lahore,Punjab,Pakistan,31.5367,74.3033,park,7.8,4.2,0,0,1
+Barki Road Food Street,Lahore,Punjab,Pakistan,31.4967,74.4267,urban,8.3,4.4,1500,0,2
+Wapda Town Roundabout,Lahore,Punjab,Pakistan,31.4255,74.265,urban,8.0,4.3,0,0,2
+Shaukat Khanum Hospital Park,Lahore,Punjab,Pakistan,31.4533,74.2667,park,7.5,4.4,0,0,1
+PIA Main Boulevard,Lahore,Punjab,Pakistan,31.4333,74.2683,urban,7.9,4.2,1000,0,1
+Do Darya Food Street,Karachi,Sindh,Pakistan,24.7575,67.0585,urban,9.7,4.7,3000,1,3
+Dolmen Mall Tariq Road,Karachi,Sindh,Pakistan,24.8735,67.0655,urban,9.0,4.5,2500,1,3
+Frere Hall Gardens,Karachi,Sindh,Pakistan,24.847,67.031,park,8.5,4.6,0,1,2
+Seaview Alpha,Karachi,Sindh,Pakistan,24.801,67.038,scenic,8.9,4.4,500,1,2
+Clifton Oyster Rocks,Karachi,Sindh,Pakistan,24.8,67.02,scenic,8.3,4.5,500,1,2
+Kemari Boat Club,Karachi,Sindh,Pakistan,24.816,66.983,urban,8.6,4.4,1500,1,2
+Baba Island,Karachi,Sindh,Pakistan,24.8167,66.95,scenic,8.0,4.3,1000,0,2
+Bhit Island,Karachi,Sindh,Pakistan,24.8167,66.9333,scenic,7.9,4.2,1000,0,1
+Gadani Ship Breaking Yard,Karachi,Sindh,Pakistan,25.0333,66.7167,urban,8.4,4.4,1000,1,2
+Mubarak Village,Karachi,Sindh,Pakistan,24.8333,66.75,scenic,8.8,4.6,2000,1,2
+Sunway Lagoon Water Park,Karachi,Sindh,Pakistan,24.7833,67.75,attraction,8.7,4.4,1500,1,2
+Fiesta Water Park,Karachi,Sindh,Pakistan,24.9667,67.15,attraction,8.5,4.3,1200,1,2
+Dreamworld Resort,Karachi,Sindh,Pakistan,25.0167,67.1333,attraction,9.0,4.5,3000,1,3
+Habib University Park,Karachi,Sindh,Pakistan,24.9167,67.1333,park,7.8,4.6,0,0,1
+Karachi University Campus,Karachi,Sindh,Pakistan,24.94,67.115,urban,8.2,4.5,0,1,2
+Nagan Chowrangi,Karachi,Sindh,Pakistan,24.9667,67.0667,urban,8.0,4.1,500,0,2
+Water Pump Chowrangi,Karachi,Sindh,Pakistan,24.95,67.0667,urban,7.8,4.0,500,0,1
+Sohrab Goth,Karachi,Sindh,Pakistan,24.95,67.0833,urban,7.5,3.9,500,0,1
+Karachi Gymkhana,Karachi,Sindh,Pakistan,24.8467,67.0267,historical,8.3,4.5,2000,1,2
+Sindh Club,Karachi,Sindh,Pakistan,24.8483,67.03,historical,8.4,4.6,3000,1,2
+Sialkot Cantonment Park,Sialkot,Punjab,Pakistan,32.518,74.535,park,7.9,4.3,50,0,1
+Allama Iqbal Park,Sialkot,Punjab,Pakistan,32.5,74.5333,park,8.2,4.4,50,1,2
+Sialkot International Airport Road,Sialkot,Punjab,Pakistan,32.5333,74.3667,urban,7.5,4.5,0,0,1
+Gujranwala Chamber of Commerce,Gujranwala,Punjab,Pakistan,32.1633,74.185,urban,7.6,4.2,0,0,1
+Fazal Centre,Gujranwala,Punjab,Pakistan,32.16,74.185,urban,8.1,4.3,1500,1,2
+Nishat Park,Gujranwala,Punjab,Pakistan,32.155,74.19,park,7.8,4.1,50,0,1
+Boulevard Mall Hyderabad,Hyderabad,Sindh,Pakistan,25.385,68.355,urban,8.7,4.5,2000,1,2
+Auto Bhan Road,Hyderabad,Sindh,Pakistan,25.3833,68.3583,urban,8.9,4.6,1500,1,2
+Qasimabad Food Street,Hyderabad,Sindh,Pakistan,25.39,68.345,urban,8.5,4.4,1000,1,2
+Kotri Barrage,Hyderabad,Sindh,Pakistan,25.3667,68.3167,historical,8.6,4.5,0,1,2
+Sukkur IBA University,Sukkur,Sindh,Pakistan,27.7267,68.8167,urban,8.2,4.6,0,1,2
+Ghanta Ghar Sukkur,Sukkur,Sindh,Pakistan,27.705,68.855,historical,8.5,4.4,0,1,2
+Ayub Bridge,Sukkur,Sindh,Pakistan,27.6967,68.8717,historical,8.7,4.5,0,1,2
+Bunder Road Sukkur,Sukkur,Sindh,Pakistan,27.7017,68.86,urban,8.4,4.3,1000,1,2
+Mushkpuri Top,Nathiagali,Khyber Pakhtunkhwa,Pakistan,34.0667,73.4,scenic,9.4,4.8,1000,1,3
+Miranjani,Nathiagali,Khyber Pakhtunkhwa,Pakistan,34.1,73.4,scenic,9.2,4.7,1000,1,3
+Dunga Gali,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.05,73.4,scenic,8.9,4.6,1500,1,2
+Changla Gali,Abbottabad,Khyber Pakhtunkhwa,Pakistan,34.0167,73.3833,scenic,8.8,4.5,1200,1,2
+Khaira Gali,Abbottabad,Khyber Pakhtunkhwa,Pakistan,33.9833,73.3667,scenic,8.5,4.4,1000,0,2
+Havelian,Haripur,Khyber Pakhtunkhwa,Pakistan,33.9333,73.1167,urban,7.5,4.2,500,0,1
+Kaghan Town,Kaghan,Khyber Pakhtunkhwa,Pakistan,34.7833,73.5167,scenic,8.8,4.5,1500,1,2
+Batakundi,Naran,Khyber Pakhtunkhwa,Pakistan,34.9333,73.7667,scenic,8.7,4.6,1500,1,2
+Jalkhand,Naran,Khyber Pakhtunkhwa,Pakistan,34.9833,73.8333,scenic,8.6,4.5,1500,1,2
+Besal,Naran,Khyber Pakhtunkhwa,Pakistan,35.05,73.9167,scenic,8.5,4.6,1200,0,2
+Payee Meadows,Shogran,Khyber Pakhtunkhwa,Pakistan,34.6333,73.4833,scenic,9.1,4.8,2000,1,3
+Utror,Swat,Khyber Pakhtunkhwa,Pakistan,35.4833,72.4667,scenic,8.8,4.7,1500,1,2
+Gabral,Swat,Khyber Pakhtunkhwa,Pakistan,35.5333,72.3833,scenic,8.7,4.6,1500,1,2
+Madyan,Swat,Khyber Pakhtunkhwa,Pakistan,35.1333,72.5333,scenic,8.9,4.5,1200,1,2
+Bahrain Swat,Swat,Khyber Pakhtunkhwa,Pakistan,35.2,72.5333,scenic,9.0,4.6,1500,1,3
+Miandam,Swat,Khyber Pakhtunkhwa,Pakistan,35.0667,72.5667,scenic,8.5,4.5,1000,1,2
+Fizagat Park,Swat,Khyber Pakhtunkhwa,Pakistan,34.7833,72.3667,park,8.6,4.4,100,1,2
+White Palace Marghazar,Swat,Khyber Pakhtunkhwa,Pakistan,34.6833,72.3333,historical,9.2,4.7,500,1,3
+Chitral Gol National Park,Chitral,Khyber Pakhtunkhwa,Pakistan,35.8833,71.7333,park,8.8,4.8,500,1,2
+Bumburet,Chitral,Khyber Pakhtunkhwa,Pakistan,35.7333,71.6667,scenic,9.0,4.7,2500,1,3
+Rumbur,Chitral,Khyber Pakhtunkhwa,Pakistan,35.7667,71.65,scenic,8.8,4.6,2500,1,2
+Birir,Chitral,Khyber Pakhtunkhwa,Pakistan,35.6833,71.7167,scenic,8.5,4.5,2000,0,2
+Gupis Valley,Ghizer,Gilgit-Baltistan,Pakistan,36.2333,73.45,scenic,8.9,4.7,1500,1,2
+Khalti Lake,Ghizer,Gilgit-Baltistan,Pakistan,36.25,73.35,scenic,8.8,4.8,1000,1,2
+Yasin Valley,Ghizer,Gilgit-Baltistan,Pakistan,36.3667,73.3333,scenic,8.7,4.6,1500,1,2
+Ishkoman Valley,Ghizer,Gilgit-Baltistan,Pakistan,36.4167,73.6833,scenic,8.5,4.5,1500,0,2
+Astore Valley,Astore,Gilgit-Baltistan,Pakistan,35.3667,74.85,scenic,9.1,4.7,2000,1,3
+Tarishing,Astore,Gilgit-Baltistan,Pakistan,35.25,74.7333,scenic,8.8,4.6,2000,1,2
+Rupal Valley,Astore,Gilgit-Baltistan,Pakistan,35.2167,74.6833,scenic,9.0,4.8,2500,1,3
+Minapin Glacier,Nagar,Gilgit-Baltistan,Pakistan,36.2167,74.55,scenic,8.9,4.7,1500,1,2
+Hopar Valley,Nagar,Gilgit-Baltistan,Pakistan,36.2,74.5333,scenic,8.8,4.6,1500,1,2
+Rush Lake,Nagar,Gilgit-Baltistan,Pakistan,36.1667,74.8833,scenic,9.2,4.9,5000,1,3
+Borith Lake,Hunza,Gilgit-Baltistan,Pakistan,36.4333,74.8667,scenic,9.0,4.7,1000,1,3
+Ondik,Hunza,Gilgit-Baltistan,Pakistan,36.45,74.85,scenic,8.5,4.6,1000,0,2
+Karimabad Market,Hunza,Gilgit-Baltistan,Pakistan,36.3167,74.6667,urban,9.4,4.8,1500,1,3
+Aliabad,Hunza,Gilgit-Baltistan,Pakistan,36.3,74.65,urban,8.8,4.5,1000,1,2
+Khunjerab National Park,Sost,Gilgit-Baltistan,Pakistan,36.8333,75.4,park,9.6,4.9,2000,1,3
+Hushe Valley,Ghanche,Gilgit-Baltistan,Pakistan,35.3333,76.3333,scenic,8.9,4.8,2500,1,2
+Machlu Valley,Ghanche,Gilgit-Baltistan,Pakistan,35.25,76.3167,scenic,8.5,4.6,2000,0,2
+Haldi Cones,Ghanche,Gilgit-Baltistan,Pakistan,35.2167,76.35,scenic,8.7,4.7,1000,1,2
+Basho Valley,Skardu,Gilgit-Baltistan,Pakistan,35.35,75.3333,scenic,9.0,4.8,2000,1,3
+Katpana Desert,Skardu,Gilgit-Baltistan,Pakistan,35.3333,75.5667,scenic,9.2,4.7,1000,1,3
+Sarfaranga Desert,Skardu,Gilgit-Baltistan,Pakistan,35.35,75.65,scenic,9.3,4.8,1500,1,3
+Skardu Fort (Kharpocho),Skardu,Gilgit-Baltistan,Pakistan,35.2967,75.6417,historical,9.1,4.7,500,1,3
+Blind Lake (Sheosar),Skardu,Gilgit-Baltistan,Pakistan,35.3833,75.7667,scenic,8.8,4.6,1500,1,2
+Buddha Rock Skardu,Skardu,Gilgit-Baltistan,Pakistan,35.2833,75.6333,historical,8.6,4.5,0,1,2
+Bahauddin Zakariya University Park,Multan,Punjab,Pakistan,30.2667,71.4333,park,7.8,4.4,0,0,1
+Chaman Zar-e-Askari,Multan,Punjab,Pakistan,30.1833,71.4667,park,8.1,4.5,50,0,2
+Cantonment Park Multan,Multan,Punjab,Pakistan,30.175,71.45,park,8.2,4.6,50,1,2
+Gulgasht Colony Food Street,Multan,Punjab,Pakistan,30.22,71.4667,urban,8.5,4.4,1000,1,2
+Bosan Road,Multan,Punjab,Pakistan,30.2333,71.4667,urban,8.6,4.5,1200,1,2
+Jinnah Park Faisalabad,Faisalabad,Punjab,Pakistan,31.4333,73.0833,park,8.0,4.3,0,1,2
+Kohinoor City,Faisalabad,Punjab,Pakistan,31.4167,73.1167,urban,8.8,4.6,2000,1,2
+Gutka Park,Faisalabad,Punjab,Pakistan,31.45,73.15,park,7.9,4.2,50,0,1
+Canal Road Faisalabad,Faisalabad,Punjab,Pakistan,31.425,73.125,urban,8.4,4.5,0,1,2
+Bahawalpur Zoo,Bahawalpur,Punjab,Pakistan,29.395,71.67,park,8.3,4.2,100,1,2
+Farid Gate,Bahawalpur,Punjab,Pakistan,29.3956,71.68,urban,8.5,4.4,500,1,2
+Darbar Mahal,Bahawalpur,Punjab,Pakistan,29.3883,71.6917,historical,8.9,4.7,200,1,2
+Lal Suhanra National Park,Bahawalpur,Punjab,Pakistan,29.35,71.95,park,8.7,4.5,200,1,2
+Hayatabad Food Street,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9833,71.4333,urban,8.8,4.6,1500,1,2
+Phase 6 Park Hayatabad,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9667,71.4333,park,8.2,4.5,0,0,2
+Qayyum Stadium,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9967,71.5333,urban,8.0,4.3,500,1,2
+Saddar Road Peshawar,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.005,71.55,urban,8.5,4.4,1000,1,2
+University of Peshawar Campus,Peshawar,Khyber Pakhtunkhwa,Pakistan,33.9967,71.4833,historical,8.1,4.5,0,1,2
+Garrison Park Peshawar,Peshawar,Khyber Pakhtunkhwa,Pakistan,34.0133,71.5333,park,7.9,4.4,50,0,1
+Chitral Museum,Chitral,Khyber Pakhtunkhwa,Pakistan,35.855,71.785,historical,8.2,4.6,100,1,2
+Shahi Mosque Chitral,Chitral,Khyber Pakhtunkhwa,Pakistan,35.852,71.782,historical,8.6,4.7,0,1,2
+Fatima Jinnah Park Quetta,Quetta,Balochistan,Pakistan,30.1917,67.0167,park,8.0,4.3,50,1,2
+Chiltan Market,Quetta,Balochistan,Pakistan,30.1933,67.0133,urban,8.1,4.2,1000,0,2
+Jinnah Road Quetta,Quetta,Balochistan,Pakistan,30.195,67.0117,urban,8.6,4.4,1200,1,2
+Spinny Road Viewpoint,Quetta,Balochistan,Pakistan,30.2167,67.0,scenic,7.8,4.1,0,0,1
+Gwadar Corniche,Gwadar,Balochistan,Pakistan,25.12,62.325,scenic,8.9,4.7,0,1,2
+Marine Drive Gwadar,Gwadar,Balochistan,Pakistan,25.125,62.33,urban,9.1,4.8,1000,1,3
+Zarghoon Road,Quetta,Balochistan,Pakistan,30.2,67.015,urban,8.4,4.5,1500,1,2
+Bolan Medical College Campus,Quetta,Balochistan,Pakistan,30.1667,66.9833,urban,7.5,4.2,0,0,1
+Dudipatsar Lake,Naran,Khyber Pakhtunkhwa,Pakistan,35.0167,73.9667,scenic,9.2,4.8,2500,1,3
+Katora Lake,Naran,Khyber Pakhtunkhwa,Pakistan,35.5333,72.1333,scenic,9.1,4.9,3000,1,3
+Gittidas,Naran,Khyber Pakhtunkhwa,Pakistan,35.1,73.9833,scenic,8.5,4.6,1500,0,2
+Gittidas Meadows,Naran,Khyber Pakhtunkhwa,Pakistan,35.1167,74.0,scenic,8.6,4.5,1500,0,2
+Noori Top,Kaghan,Khyber Pakhtunkhwa,Pakistan,34.95,74.05,scenic,8.9,4.7,2000,1,2
+Burzil Pass,Astore,Gilgit-Baltistan,Pakistan,34.9,75.1,scenic,9.0,4.8,2000,1,3
+Chilam Chowki,Astore,Gilgit-Baltistan,Pakistan,34.9833,75.05,scenic,8.4,4.4,1000,0,2
+Minimarg,Astore,Gilgit-Baltistan,Pakistan,34.7833,75.0833,scenic,9.1,4.9,3000,1,3
+Domel,Astore,Gilgit-Baltistan,Pakistan,34.7667,75.1167,scenic,8.8,4.7,2500,1,2
+Naltar Lakes,Nagar,Gilgit-Baltistan,Pakistan,36.1667,74.15,scenic,9.4,4.8,2000,1,3
+Karakoram Highway Viewpoint,Hunza,Gilgit-Baltistan,Pakistan,36.3167,74.65,scenic,9.5,4.9,0,1,3
+Rakaposhi Base Camp,Nagar,Gilgit-Baltistan,Pakistan,36.1667,74.45,scenic,9.2,4.8,3000,1,3
+Dirk,Dir,Khyber Pakhtunkhwa,Pakistan,35.2,71.8667,urban,7.5,4.1,500,0,1
+Lowari Top,Dir,Khyber Pakhtunkhwa,Pakistan,35.3333,71.8,scenic,8.7,4.5,1000,1,2
+Lowari Tunnel Viewpoint,Dir,Khyber Pakhtunkhwa,Pakistan,35.3167,71.8167,scenic,8.5,4.6,0,1,2
+Kaghan River View,Kaghan,Khyber Pakhtunkhwa,Pakistan,34.7833,73.5333,scenic,8.6,4.5,0,1,2
+Naran Bazaar,Naran,Khyber Pakhtunkhwa,Pakistan,34.9,73.65,urban,9.2,4.5,1500,1,3
+Kunhar River Rafting Point,Naran,Khyber Pakhtunkhwa,Pakistan,34.9167,73.6667,attraction,8.9,4.7,2000,1,2
+Kiwai,Kaghan,Khyber Pakhtunkhwa,Pakistan,34.6167,73.4167,scenic,8.8,4.6,500,1,2
+Balakot Bazaar,Balakot,Khyber Pakhtunkhwa,Pakistan,34.55,73.35,urban,8.5,4.3,1000,1,2
+Gari Habibullah,Balakot,Khyber Pakhtunkhwa,Pakistan,34.4,73.3667,urban,7.8,4.2,500,0,1
+Shogran Pine Park,Shogran,Khyber Pakhtunkhwa,Pakistan,34.6333,73.4667,park,8.6,4.5,0,1,2
+Makwa,Shogran,Khyber Pakhtunkhwa,Pakistan,34.65,73.45,scenic,7.9,4.4,1000,0,1
+Kundal Shahi,Balakot,Khyber Pakhtunkhwa,Pakistan,34.5667,73.3667,scenic,8.0,4.3,500,0,2
+Neelam Point,Muzaffarabad,Azad Kashmir,Pakistan,34.3667,73.4667,scenic,8.8,4.6,500,1,2
+Red Fort Muzaffarabad,Muzaffarabad,Azad Kashmir,Pakistan,34.3667,73.4833,historical,8.7,4.5,100,1,2
+PC Hotel Viewpoint Muzaffarabad,Muzaffarabad,Azad Kashmir,Pakistan,34.35,73.4667,scenic,8.5,4.6,2000,1,2
+Kutton Waterfall,Neelum,Azad Kashmir,Pakistan,34.6,73.8667,scenic,9.1,4.7,500,1,3
+Keran Resort,Neelum,Azad Kashmir,Pakistan,34.6333,73.9167,scenic,8.9,4.6,2000,1,2
+Dawarian,Neelum,Azad Kashmir,Pakistan,34.7167,73.9667,scenic,8.5,4.5,1500,0,2
+Sharda,Neelum,Azad Kashmir,Pakistan,34.7833,74.1833,scenic,9.2,4.8,2000,1,3
+Kel,Neelum,Azad Kashmir,Pakistan,34.8167,74.3167,scenic,9.0,4.6,1500,1,3
+Taobat,Neelum,Azad Kashmir,Pakistan,34.8667,74.65,scenic,9.3,4.9,2500,1,3
+Chitta Katha Lake,Neelum,Azad Kashmir,Pakistan,34.9,74.45,scenic,9.5,4.9,3000,1,3
+Saral Lake,Neelum,Azad Kashmir,Pakistan,34.8667,74.2833,scenic,8.8,4.7,2500,1,2
+Rawalakot City Park,Rawalakot,Azad Kashmir,Pakistan,33.85,73.75,park,8.0,4.4,50,1,2
+Poonch River,Rawalakot,Azad Kashmir,Pakistan,33.7833,73.8833,scenic,8.5,4.5,0,1,2
+Bagh Bazaar,Bagh,Azad Kashmir,Pakistan,33.9667,73.7833,urban,8.2,4.3,1000,1,2
+Sudhan Gali,Bagh,Azad Kashmir,Pakistan,34.05,73.7333,scenic,8.6,4.6,1000,1,2

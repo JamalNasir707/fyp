@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+ortools
+pydantic
+motor
+dnspython
+pymongo
+requests
+pandas
+openpyxl
+google-auth
+google-genai
+httpx

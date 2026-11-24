@@ -1,0 +1,823 @@
+{
+  "users": [
+    {
+      "id": "demo-user",
+      "username": "demo",
+      "email": "demo@example.com",
+      "password_hash": "86c8a5ceb46ea69a3b64f10154dcabbb$591ab0494c1ca191a0100011e425e473db343c298cb1a311f04c093f6662b546",
+      "role": "user",
+      "createdAt": "2026-10-26T19:35:47.841711+00:00",
+      "lastLogin": null
+    },
+    {
+      "id": "admin-user",
+      "username": "admin",
+      "email": "admin@example.com",
+      "password_hash": "57d3376edf26bc3d6870041a84ff8816$93e214ce750cbb8a42eecdff85d065ba5032a0f994b1756c65f4a1821812915c",
+      "role": "admin",
+      "createdAt": "2026-10-26T19:35:48.179639+00:00",
+      "lastLogin": null
+    },
+    {
+      "id": "user-cf227e4efee5a8c6",
+      "username": "bilal",
+      "email": "raibilalsultan0@gmail.com",
+      "name": "bilal",
+      "password_hash": "d2407d6d067c2f4e63d71df5b22af665$a25824d91b8b6a632ed25187540ad27a8da79104f8b8f0de1af503a7b4f96762",
+      "role": "user",
+      "createdAt": "2026-10-26T19:37:25.351064+00:00",
+      "lastLogin": "2026-10-26T19:37:25.708972+00:00"
+    },
+    {
+      "id": "user-1be6e3fdc454e352",
+      "username": "malik5783516",
+      "email": "35597@students.riphah.edu.pk",
+      "name": "malik5783516",
+      "password_hash": "edafda052359bdf8c8485a8da3066cdc$11bf7114817cef1554d1e730dffe0bfa597069b05c9d8c4207f4ee104dc76d87",
+      "role": "user",
+      "createdAt": "2026-11-10T10:29:48.877271+00:00",
+      "lastLogin": "2026-11-10T10:29:49.661822+00:00"
+    }
+  ],
+  "sessions": [
+    {
+      "userId": "user-cf227e4efee5a8c6",
+      "token": "fKe5oU2Y0rFKVuZSPEUeX5COW0qoPjlS4kmqQcNGsqM",
+      "createdAt": "2026-10-26T19:37:25.711470+00:00",
+      "expiresAt": "2026-11-02T19:37:25.711445+00:00"
+    },
+    {
+      "userId": "user-1be6e3fdc454e352",
+      "token": "4WgTf_98PSxYao3MLWBOwmDPfE5TrGH7W6LzK9n9z2U",
+      "createdAt": "2026-11-10T10:29:49.667944+00:00",
+      "expiresAt": "2026-11-17T10:29:49.667944+00:00"
+    }
+  ],
+  "trips": [
+    {
+      "_id": "trip_crud_alpha_100",
+      "tripId": "trip_crud_alpha_100",
+      "userId": "user_owner_crud_101",
+      "title": "Trip Alpha"
+    },
+    {
+      "_id": "trip_crud_beta_200",
+      "tripId": "trip_crud_beta_200",
+      "userId": "user_owner_crud_101",
+      "title": "Trip Beta"
+    },
+    {
+      "createdAt": "2026-10-26T19:37:59.834606+00:00",
+      "userId": "user-cf227e4efee5a8c6",
+      "tripId": 1793043479826,
+      "destination": "Islamabad",
+      "startDate": "2026-10-30",
+      "endDate": "2026-11-07",
+      "privacy": "private",
+      "itinerary": [
+        {
+          "id": "day-1",
+          "label": "Day 1",
+          "shortLabel": "Day 1",
+          "date": "Fri Oct 30 2026",
+          "items": []
+        },
+        {
+          "id": "day-2",
+          "label": "Day 2",
+          "shortLabel": "Day 2",
+          "date": "Sat Oct 31 2026",
+          "items": []
+        },
+        {
+          "id": "day-3",
+          "label": "Day 3",
+          "shortLabel": "Day 3",
+          "date": "Sun Nov 01 2026",
+          "items": []
+        },
+        {
+          "id": "day-4",
+          "label": "Day 4",
+          "shortLabel": "Day 4",
+          "date": "Mon Nov 02 2026",
+          "items": []
+        },
+        {
+          "id": "day-5",
+          "label": "Day 5",
+          "shortLabel": "Day 5",
+          "date": "Tue Nov 03 2026",
+          "items": []
+        },
+        {
+          "id": "day-6",
+          "label": "Day 6",
+          "shortLabel": "Day 6",
+          "date": "Wed Nov 04 2026",
+          "items": []
+        },
+        {
+          "id": "day-7",
+          "label": "Day 7",
+          "shortLabel": "Day 7",
+          "date": "Thu Nov 05 2026",
+          "items": []
+        },
+        {
+          "id": "day-8",
+          "label": "Day 8",
+          "shortLabel": "Day 8",
+          "date": "Fri Nov 06 2026",
+          "items": []
+        },
+        {
+          "id": "day-9",
+          "label": "Day 9",
+          "shortLabel": "Day 9",
+          "date": "Sat Nov 07 2026",
+          "items": []
+        }
+      ],
+      "preferences": {
+        "province": "Punjab",
+        "startLat": 31.5204,
+        "startLon": 74.3587,
+        "useBudget": true,
+        "maxBudget": 5000,
+        "useTimeLimit": true,
+        "maxTravelHours": 12,
+        "useCategories": true,
+        "preferredCategories": [
+          "park",
+          "scenic"
+        ],
+        "useCrowdFilter": false,
+        "scoreWeight": 1,
+        "timeWeight": 0.5,
+        "costWeight": 0.01,
+        "questionnaire": {
+          "budgetLevel": "Medium",
+          "tripDuration": "2-3 Days",
+          "travelCompanions": "Friends",
+          "travelStyle": "Mixed",
+          "personality": "Extrovert",
+          "environment": "Nature",
+          "crowdPreference": "Neutral",
+          "physicalCondition": "No issues"
+        }
+      },
+      "data": {
+        "id": 1793043479826,
+        "title": "Trip to Islamabad",
+        "name": "Islamabad",
+        "dates": "2026-10-30 - 2026-11-07",
+        "notes": "",
+        "placesPool": [],
+        "customLists": [],
+        "days": [
+          {
+            "id": "day-1",
+            "label": "Day 1",
+            "shortLabel": "Day 1",
+            "date": "Fri Oct 30 2026",
+            "items": []
+          },
+          {
+            "id": "day-2",
+            "label": "Day 2",
+            "shortLabel": "Day 2",
+            "date": "Sat Oct 31 2026",
+            "items": []
+          },
+          {
+            "id": "day-3",
+            "label": "Day 3",
+            "shortLabel": "Day 3",
+            "date": "Sun Nov 01 2026",
+            "items": []
+          },
+          {
+            "id": "day-4",
+            "label": "Day 4",
+            "shortLabel": "Day 4",
+            "date": "Mon Nov 02 2026",
+            "items": []
+          },
+          {
+            "id": "day-5",
+            "label": "Day 5",
+            "shortLabel": "Day 5",
+            "date": "Tue Nov 03 2026",
+            "items": []
+          },
+          {
+            "id": "day-6",
+            "label": "Day 6",
+            "shortLabel": "Day 6",
+            "date": "Wed Nov 04 2026",
+            "items": []
+          },
+          {
+            "id": "day-7",
+            "label": "Day 7",
+            "shortLabel": "Day 7",
+            "date": "Thu Nov 05 2026",
+            "items": []
+          },
+          {
+            "id": "day-8",
+            "label": "Day 8",
+            "shortLabel": "Day 8",
+            "date": "Fri Nov 06 2026",
+            "items": []
+          },
+          {
+            "id": "day-9",
+            "label": "Day 9",
+            "shortLabel": "Day 9",
+            "date": "Sat Nov 07 2026",
+            "items": []
+          }
+        ],
+        "expenses": [],
+        "budget": {
+          "currency": "PKR",
+          "amount": 0
+        },
+        "map": {
+          "selectedPlaceId": null
+        },
+        "enginePreferences": {
+          "province": "Punjab",
+          "startLat": 31.5204,
+          "startLon": 74.3587,
+          "useBudget": true,
+          "maxBudget": 5000,
+          "useTimeLimit": true,
+          "maxTravelHours": 12,
+          "useCategories": true,
+          "preferredCategories": [
+            "park",
+            "scenic"
+          ],
+          "useCrowdFilter": false,
+          "scoreWeight": 1,
+          "timeWeight": 0.5,
+          "costWeight": 0.01,
+          "questionnaire": {
+            "budgetLevel": "Medium",
+            "tripDuration": "2-3 Days",
+            "travelCompanions": "Friends",
+            "travelStyle": "Mixed",
+            "personality": "Extrovert",
+            "environment": "Nature",
+            "crowdPreference": "Neutral",
+            "physicalCondition": "No issues"
+          }
+        },
+        "privacy": "private",
+        "startDate": "2026-10-30",
+        "endDate": "2026-11-07",
+        "members": []
+      },
+      "updatedAt": "2026-10-26T19:37:59.834606+00:00"
+    },
+    {
+      "createdAt": "2026-11-10T10:33:55.884522+00:00",
+      "userId": "user-1be6e3fdc454e352",
+      "tripId": 1794306835710,
+      "destination": "Karachi",
+      "startDate": "2026-11-25",
+      "endDate": "2026-11-27",
+      "privacy": "private",
+      "itinerary": [
+        {
+          "id": "day-1",
+          "label": "Wed, Nov 25 \u2022 Karachi",
+          "shortLabel": "Day 1",
+          "date": "Wed Nov 25 2026",
+          "isoDate": "2026-11-25",
+          "items": [
+            {
+              "id": "hill-park-karachi",
+              "title": "Hill Park",
+              "subtitle": "Block 6, PECHS, Karachi",
+              "category": "Scenic Viewpoint",
+              "lat": 24.871,
+              "lon": 67.072,
+              "unresolvedCoordinates": false,
+              "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+              "photo": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+              "startTime": "09:30",
+              "endTime": "11:00",
+              "note": "Elevated hilltop garden park offering breezes and panoramic skyline views across the city.",
+              "visitDetails": {
+                "visited": false,
+                "notes": "",
+                "visitedDate": null,
+                "visitedTime": null
+              },
+              "type": "place"
+            }
+          ],
+          "optimization": {
+            "success": true,
+            "dayId": "day-1",
+            "order": [
+              "hill-park-karachi"
+            ],
+            "metrics": {
+              "totalDistanceKm": 0,
+              "estimatedTravelTimeHours": 0
+            },
+            "legs": [],
+            "algorithm": {
+              "name": "TSP 2-Opt",
+              "version": "1.0"
+            },
+            "updatedAt": 1794306835497
+          }
+        },
+        {
+          "id": "day-2",
+          "label": "Thu, Nov 26 \u2022 Karachi",
+          "shortLabel": "Day 2",
+          "date": "Thu Nov 26 2026",
+          "isoDate": "2026-11-26",
+          "items": [],
+          "optimization": {
+            "success": true,
+            "dayId": "day-2",
+            "order": [],
+            "metrics": {
+              "totalDistanceKm": 0,
+              "estimatedTravelTimeHours": 0
+            },
+            "legs": [],
+            "algorithm": {
+              "name": "TSP 2-Opt",
+              "version": "1.0"
+            },
+            "updatedAt": 1794306835708
+          }
+        },
+        {
+          "id": "day-3",
+          "label": "Fri, Nov 27 \u2022 Karachi",
+          "shortLabel": "Day 3",
+          "date": "Fri Nov 27 2026",
+          "isoDate": "2026-11-27",
+          "items": [],
+          "optimization": {
+            "success": true,
+            "dayId": "day-3",
+            "order": [],
+            "metrics": {
+              "totalDistanceKm": 0,
+              "estimatedTravelTimeHours": 0
+            },
+            "legs": [],
+            "algorithm": {
+              "name": "TSP 2-Opt",
+              "version": "1.0"
+            },
+            "updatedAt": 1794306835710
+          }
+        }
+      ],
+      "preferences": {
+        "province": "Sindh",
+        "startLat": 24.8607,
+        "startLon": 67.0011,
+        "maxBudget": 50000,
+        "maxTravelHours": 12,
+        "preferredCategories": [
+          "Top sights",
+          "Food & drink",
+          "Parks & nature"
+        ],
+        "questionnaire": {
+          "budgetLevel": "Moderate",
+          "travelCompanions": "Friends",
+          "tripDuration": "3 Days"
+        }
+      },
+      "data": {
+        "id": 1794306835710,
+        "tripId": 1794306835710,
+        "title": "Trip to Karachi",
+        "name": "Karachi",
+        "destination": "Karachi",
+        "startDate": "2026-11-25",
+        "endDate": "2026-11-27",
+        "dates": "2026-11-25 - 2026-11-27",
+        "privacy": "private",
+        "notes": "",
+        "budget": {
+          "currency": "PKR",
+          "amount": 50000
+        },
+        "isTripmate": false,
+        "days": [
+          {
+            "id": "day-1",
+            "label": "Wed, Nov 25 \u2022 Karachi",
+            "shortLabel": "Day 1",
+            "date": "Wed Nov 25 2026",
+            "isoDate": "2026-11-25",
+            "items": [
+              {
+                "id": "hill-park-karachi",
+                "title": "Hill Park",
+                "subtitle": "Block 6, PECHS, Karachi",
+                "category": "Scenic Viewpoint",
+                "lat": 24.871,
+                "lon": 67.072,
+                "unresolvedCoordinates": false,
+                "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+                "photo": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+                "startTime": "09:30",
+                "endTime": "11:00",
+                "note": "Elevated hilltop garden park offering breezes and panoramic skyline views across the city.",
+                "visitDetails": {
+                  "visited": false,
+                  "notes": "",
+                  "visitedDate": null,
+                  "visitedTime": null
+                },
+                "type": "place"
+              }
+            ],
+            "optimization": {
+              "success": true,
+              "dayId": "day-1",
+              "order": [
+                "hill-park-karachi"
+              ],
+              "metrics": {
+                "totalDistanceKm": 0,
+                "estimatedTravelTimeHours": 0
+              },
+              "legs": [],
+              "algorithm": {
+                "name": "TSP 2-Opt",
+                "version": "1.0"
+              },
+              "updatedAt": 1794306835497
+            }
+          },
+          {
+            "id": "day-2",
+            "label": "Thu, Nov 26 \u2022 Karachi",
+            "shortLabel": "Day 2",
+            "date": "Thu Nov 26 2026",
+            "isoDate": "2026-11-26",
+            "items": [],
+            "optimization": {
+              "success": true,
+              "dayId": "day-2",
+              "order": [],
+              "metrics": {
+                "totalDistanceKm": 0,
+                "estimatedTravelTimeHours": 0
+              },
+              "legs": [],
+              "algorithm": {
+                "name": "TSP 2-Opt",
+                "version": "1.0"
+              },
+              "updatedAt": 1794306835708
+            }
+          },
+          {
+            "id": "day-3",
+            "label": "Fri, Nov 27 \u2022 Karachi",
+            "shortLabel": "Day 3",
+            "date": "Fri Nov 27 2026",
+            "isoDate": "2026-11-27",
+            "items": [],
+            "optimization": {
+              "success": true,
+              "dayId": "day-3",
+              "order": [],
+              "metrics": {
+                "totalDistanceKm": 0,
+                "estimatedTravelTimeHours": 0
+              },
+              "legs": [],
+              "algorithm": {
+                "name": "TSP 2-Opt",
+                "version": "1.0"
+              },
+              "updatedAt": 1794306835710
+            }
+          }
+        ],
+        "placesPool": [],
+        "customLists": [
+          {
+            "id": "packing",
+            "title": "Packing Essentials",
+            "items": [
+              "Camera",
+              "Power Bank",
+              "Comfortable Shoes",
+              "ID & Tickets"
+            ]
+          }
+        ],
+        "expenses": [],
+        "map": {
+          "selectedPlaceId": null
+        },
+        "enginePreferences": {
+          "province": "Sindh",
+          "startLat": 24.8607,
+          "startLon": 67.0011,
+          "maxBudget": 50000,
+          "maxTravelHours": 12,
+          "preferredCategories": [
+            "Top sights",
+            "Food & drink",
+            "Parks & nature"
+          ],
+          "questionnaire": {
+            "budgetLevel": "Moderate",
+            "travelCompanions": "Friends",
+            "tripDuration": "3 Days"
+          }
+        },
+        "members": [],
+        "reservations": [],
+        "attachments": [],
+        "userId": "user-1be6e3fdc454e352",
+        "createdAt": "2026-11-10T10:33:55.884522+00:00",
+        "updatedAt": "2026-11-10T10:33:55.884522+00:00",
+        "shareToken": null,
+        "editShareToken": null,
+        "data": {
+          "id": 1794306835710,
+          "tripId": 1794306835710,
+          "title": "Trip to Karachi",
+          "name": "Karachi",
+          "destination": "Karachi",
+          "startDate": "2026-11-25",
+          "endDate": "2026-11-27",
+          "dates": "2026-11-25 - 2026-11-27",
+          "privacy": "private",
+          "notes": "",
+          "budget": {
+            "currency": "PKR",
+            "amount": 50000
+          },
+          "isTripmate": false,
+          "days": [
+            {
+              "id": "day-1",
+              "label": "Wed, Nov 25 \u2022 Karachi",
+              "shortLabel": "Day 1",
+              "date": "Wed Nov 25 2026",
+              "isoDate": "2026-11-25",
+              "items": [
+                {
+                  "id": "hill-park-karachi",
+                  "title": "Hill Park",
+                  "subtitle": "Block 6, PECHS, Karachi",
+                  "category": "Scenic Viewpoint",
+                  "lat": 24.871,
+                  "lon": 67.072,
+                  "unresolvedCoordinates": false,
+                  "image": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+                  "photo": "https://upload.wikimedia.org/wikipedia/commons/3/34/Hill_Park_Karachi.jpg",
+                  "startTime": "09:30",
+                  "endTime": "11:00",
+                  "note": "Elevated hilltop garden park offering breezes and panoramic skyline views across the city.",
+                  "visitDetails": {
+                    "visited": false,
+                    "notes": "",
+                    "visitedDate": null,
+                    "visitedTime": null
+                  },
+                  "type": "place"
+                }
+              ],
+              "optimization": {
+                "success": true,
+                "dayId": "day-1",
+                "order": [
+                  "hill-park-karachi"
+                ],
+                "metrics": {
+                  "totalDistanceKm": 0,
+                  "estimatedTravelTimeHours": 0
+                },
+                "legs": [],
+                "algorithm": {
+                  "name": "TSP 2-Opt",
+                  "version": "1.0"
+                },
+                "updatedAt": 1794306835497
+              }
+            },
+            {
+              "id": "day-2",
+              "label": "Thu, Nov 26 \u2022 Karachi",
+              "shortLabel": "Day 2",
+              "date": "Thu Nov 26 2026",
+              "isoDate": "2026-11-26",
+              "items": [],
+              "optimization": {
+                "success": true,
+                "dayId": "day-2",
+                "order": [],
+                "metrics": {
+                  "totalDistanceKm": 0,
+                  "estimatedTravelTimeHours": 0
+                },
+                "legs": [],
+                "algorithm": {
+                  "name": "TSP 2-Opt",
+                  "version": "1.0"
+                },
+                "updatedAt": 1794306835708
+              }
+            },
+            {
+              "id": "day-3",
+              "label": "Fri, Nov 27 \u2022 Karachi",
+              "shortLabel": "Day 3",
+              "date": "Fri Nov 27 2026",
+              "isoDate": "2026-11-27",
+              "items": [],
+              "optimization": {
+                "success": true,
+                "dayId": "day-3",
+                "order": [],
+                "metrics": {
+                  "totalDistanceKm": 0,
+                  "estimatedTravelTimeHours": 0
+                },
+                "legs": [],
+                "algorithm": {
+                  "name": "TSP 2-Opt",
+                  "version": "1.0"
+                },
+                "updatedAt": 1794306835710
+              }
+            }
+          ],
+          "placesPool": [],
+          "customLists": [
+            {
+              "id": "packing",
+              "title": "Packing Essentials",
+              "items": [
+                "Camera",
+                "Power Bank",
+                "Comfortable Shoes",
+                "ID & Tickets"
+              ]
+            }
+          ],
+          "expenses": [],
+          "map": {
+            "selectedPlaceId": null
+          },
+          "enginePreferences": {
+            "province": "Sindh",
+            "startLat": 24.8607,
+            "startLon": 67.0011,
+            "maxBudget": 50000,
+            "maxTravelHours": 12,
+            "preferredCategories": [
+              "Top sights",
+              "Food & drink",
+              "Parks & nature"
+            ],
+            "questionnaire": {
+              "budgetLevel": "Moderate",
+              "travelCompanions": "Friends",
+              "tripDuration": "3 Days"
+            }
+          },
+          "members": [],
+          "reservations": [],
+          "attachments": []
+        },
+        "ownerId": "user-1be6e3fdc454e352"
+      },
+      "updatedAt": "2026-11-10T10:34:18.430511+00:00"
+    }
+  ],
+  "activity_history": [
+    {
+      "actorUserId": "user-cf227e4efee5a8c6",
+      "eventType": "trip_created",
+      "subjectType": "trip",
+      "subjectId": "1793043479826",
+      "tripId": "1793043479826",
+      "title": "Trip created",
+      "description": "Created \"Trip to Islamabad\".",
+      "actionUrl": "/workspace",
+      "metadata": {
+        "tripTitle": "Trip to Islamabad"
+      },
+      "createdAt": "2026-10-26T19:37:59.838246+00:00",
+      "id": "activity-1793043479838"
+    },
+    {
+      "actorUserId": "user-1be6e3fdc454e352",
+      "eventType": "trip_created",
+      "subjectType": "trip",
+      "subjectId": "1794306708229",
+      "tripId": "1794306708229",
+      "title": "Trip created",
+      "description": "Created \"Trip to Islamabad\".",
+      "actionUrl": "/workspace",
+      "metadata": {
+        "tripTitle": "Trip to Islamabad"
+      },
+      "createdAt": "2026-11-10T10:31:48.365685+00:00",
+      "id": "activity-1794306708365"
+    },
+    {
+      "actorUserId": "user-1be6e3fdc454e352",
+      "eventType": "trip_deleted",
+      "subjectType": "trip",
+      "subjectId": "1794306708229",
+      "tripId": "1794306708229",
+      "title": "Trip deleted",
+      "description": "Deleted \"Trip to Islamabad\".",
+      "actionUrl": null,
+      "metadata": {
+        "tripTitle": "Trip to Islamabad"
+      },
+      "createdAt": "2026-11-10T10:32:39.865424+00:00",
+      "id": "activity-1794306759865"
+    },
+    {
+      "actorUserId": "user-1be6e3fdc454e352",
+      "eventType": "trip_created",
+      "subjectType": "trip",
+      "subjectId": "1794306835710",
+      "tripId": "1794306835710",
+      "title": "Trip created",
+      "description": "Created \"Trip to Karachi\".",
+      "actionUrl": "/workspace",
+      "metadata": {
+        "tripTitle": "Trip to Karachi"
+      },
+      "createdAt": "2026-11-10T10:33:55.888545+00:00",
+      "id": "activity-1794306835888"
+    }
+  ],
+  "follows": [],
+  "notifications": [],
+  "trip_members": [
+    {
+      "tripId": "trip_crud_alpha_100",
+      "userId": "user_accepted_crud_102",
+      "status": "accepted",
+      "role": "member"
+    },
+    {
+      "tripId": "trip_crud_alpha_100",
+      "userId": "user_pending_crud_103",
+      "status": "pending",
+      "role": "member"
+    },
+    {
+      "tripId": "trip_crud_alpha_100",
+      "userId": "user_declined_crud_104",
+      "status": "declined",
+      "role": "member"
+    }
+  ],
+  "shared_budget_expenses": [
+    {
+      "_id": "6ade4dc6ab12765841c1454d",
+      "id": "7e9795f8-2ea7-4f47-a415-e38cde77d299",
+      "tripId": "trip_crud_alpha_100",
+      "name": "Unpaid Ticket",
+      "amount": 1500.0,
+      "currency": "PKR",
+      "category": "Other",
+      "date": "2026-10-25",
+      "destinationReference": "",
+      "status": "pending",
+      "payers": [
+        {
+          "userId": "user_owner_crud_101",
+          "name": "Owner",
+          "amount": 1500.0
+        }
+      ],
+      "participants": [],
+      "createdBy": "user_owner_crud_101",
+      "createdAt": "2026-10-25T18:43:18.455413+00:00",
+      "updatedAt": "2026-10-25T18:43:18.455413+00:00"
+    }
+  ],
+  "shared_budget_settlements": []
+}

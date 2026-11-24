@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Optimization Test Interface</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Spatially Cohesive Travel Optimizer</h1>
+            <p>Test Interface (FYP Engine)</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- Left Side: Input Form -->
+            <section class="input-section">
+                <div class="smart-section">
+                    <h2>Smart Travel Preferences</h2>
+                    <div class="smart-grid">
+                        <div class="form-group">
+                            <label for="q_budget">Budget Level:</label>
+                            <select id="q_budget" class="smart-select">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_duration">Trip Duration:</label>
+                            <select id="q_duration" class="smart-select">
+                                <option value="1 Day">1 Day</option>
+                                <option value="2–3 Days" selected>2–3 Days</option>
+                                <option value="4–7 Days">4–7 Days</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_companions">Travel Companions:</label>
+                            <select id="q_companions" class="smart-select">
+                                <option value="Solo">Solo</option>
+                                <option value="Friends" selected>Friends</option>
+                                <option value="Family">Family</option>
+                                <option value="Family with Kids">Family with Kids</option>
+                                <option value="Elderly">Elderly</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_style">Travel Style:</label>
+                            <select id="q_style" class="smart-select">
+                                <option value="Relaxation">Relaxation</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Cultural">Cultural</option>
+                                <option value="Mixed" selected>Mixed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_personality">Personality:</label>
+                            <select id="q_personality" class="smart-select">
+                                <option value="Introvert">Introvert</option>
+                                <option value="Extrovert" selected>Extrovert</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_environment">Preferred Environment:</label>
+                            <select id="q_environment" class="smart-select">
+                                <option value="Mountains">Mountains</option>
+                                <option value="City">City</option>
+                                <option value="Historical">Historical</option>
+                                <option value="Nature" selected>Nature</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_crowd">Crowd Preference:</label>
+                            <select id="q_crowd" class="smart-select">
+                                <option value="Avoid crowds">Avoid crowds</option>
+                                <option value="Neutral" selected>Neutral</option>
+                                <option value="Enjoy crowds">Enjoy crowds</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="q_condition">Physical Condition:</label>
+                            <select id="q_condition" class="smart-select">
+                                <option value="No issues" selected>No issues</option>
+                                <option value="Limited mobility">Limited mobility</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="button" id="smart-generate-btn" class="secondary-btn">Generate Smart Plan</button>
+                    <div id="smart-preview" class="smart-preview hidden"></div>
+                </div>
+
+                <h2>Plan Your Trip</h2>
+                <form id="optimize-form">
+                    <div class="form-group">
+                        <label for="province">Province:</label>
+                        <input type="text" id="province" name="province" placeholder="e.g., Punjab" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_budget">Max Budget (PKR):</label>
+                        <input type="number" id="max_budget" name="max_budget" placeholder="e.g., 5000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="max_travel_hours">Max Travel Time (Hours):</label>
+                        <input type="number" id="max_travel_hours" name="max_travel_hours" placeholder="e.g., 12" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_lat">Start Latitude:</label>
+                        <input type="number" id="start_lat" name="start_lat" step="any" value="31.5204" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start_lon">Start Longitude:</label>
+                        <input type="number" id="start_lon" name="start_lon" step="any" value="74.3587" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred_categories">Preferred Categories (comma separated):</label>
+                        <input type="text" id="preferred_categories" name="preferred_categories" placeholder="e.g., mountain, lake">
+                    </div>
+                    
+                    <div class="form-group checkbox-group" style="display: flex; align-items: center; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
+                        <input type="checkbox" id="use_live_data" name="use_live_data" style="width: auto; margin: 0; cursor: pointer;">
+                        <label for="use_live_data" style="margin: 0; cursor: pointer;">Use Live Data (Fetch extra places from OpenTripMap)</label>
+                    </div>
+
+                    <button type="submit" id="submit-btn">Optimize Route</button>
+                </form>
+                <div id="error-message" class="error hidden"></div>
+            </section>
+
+            <!-- Right Side: Map and Results -->
+            <section class="display-section">
+                <div id="map"></div>
+                
+                <div id="results-container" class="hidden">
+                    <h2>Optimization Results</h2>
+                    <div class="summary-cards">
+                        <div class="card">
+                            <span class="label">Total Distance:</span>
+                            <span id="res-distance">-</span> km
+                        </div>
+                        <div class="card">
+                            <span class="label">Total Time:</span>
+                            <span id="res-time">-</span> hrs
+                        </div>
+                        <div class="card">
+                            <span class="label">Utility Score:</span>
+                            <span id="res-utility">-</span>
+                        </div>
+                    </div>
+
+                    <div class="actions-row">
+                        <button type="button" id="update-btn" class="secondary-btn" disabled>Update Plan</button>
+                        <button type="button" id="regenerate-btn">Regenerate Full Plan</button>
+                    </div>
+
+                    <div id="feedback-panel" class="feedback-panel hidden">
+                        <div class="feedback-row">
+                            <span class="feedback-label">Liked categories:</span>
+                            <span id="liked-categories" class="feedback-value">-</span>
+                        </div>
+                        <div class="feedback-row">
+                            <span class="feedback-label">Disliked categories:</span>
+                            <span id="disliked-categories" class="feedback-value">-</span>
+                        </div>
+                        <div class="feedback-row">
+                            <span class="feedback-label">Removed places:</span>
+                            <span id="removed-places" class="feedback-value">-</span>
+                        </div>
+                    </div>
+
+                    <h3>Itinerary</h3>
+                    <div class="table-wrapper">
+                        <table id="itinerary-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Location</th>
+                                    <th>Category</th>
+                                    <th>Arrival</th>
+                                    <th>Duration</th>
+                                    <th>Departure</th>
+                                    <th>Feedback</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>

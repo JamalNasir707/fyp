@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TripNest</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 420px;
+            width: 100%;
+            padding: 50px 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .toggle-form p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .toggle-link {
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            background: #fdeaea;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 13px;
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            background: #eafaf1;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .demo-notice {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+            text-align: center;
+        }
+
+        .demo-notice strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">🧭 TripNest</div>
+            <div class="tagline">Plan Your Perfect Journey</div>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <div class="form-section active" id="login-form">
+            <div class="error-message" id="login-error"></div>
+            <div class="success-message" id="login-success"></div>
+
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" placeholder="Enter your username" />
+            </div>
+
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" placeholder="Enter your password" />
+            </div>
+
+            <button class="login-btn" id="login-btn" onclick="handleLogin()">
+                Sign In
+            </button>
+
+            <div class="toggle-form">
+                <p>Don't have an account? <span class="toggle-link" onclick="toggleForms()">Create one</span></p>
+            </div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div class="form-section" id="register-form">
+            <div class="error-message" id="register-error"></div>
+            <div class="success-message" id="register-success"></div>
+
+            <div class="form-group">
+                <label for="register-username">Username</label>
+                <input type="text" id="register-username" placeholder="Choose a username" />
+            </div>
+
+            <div class="form-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" placeholder="Enter your email" />
+            </div>
+
+            <div class="form-group">
+                <label for="register-password">Password</label>
+                <input type="password" id="register-password" placeholder="Create a password (min 6 chars)" />
+            </div>
+
+            <div class="form-group">
+                <label for="register-confirm">Confirm Password</label>
+                <input type="password" id="register-confirm" placeholder="Confirm password" />
+            </div>
+
+            <button class="login-btn" id="register-btn" onclick="handleRegister()">
+                Create Account
+            </button>
+
+            <div class="toggle-form">
+                <p>Already have an account? <span class="toggle-link" onclick="toggleForms()">Sign in</span></p>
+            </div>
+        </div>
+
+        <div class="demo-notice">
+            <strong>Demo Credentials:</strong>
+            Username: demo<br>
+            Password: demo123
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+
+        function toggleForms() {
+            document.getElementById('login-form').classList.toggle('active');
+            document.getElementById('register-form').classList.toggle('active');
+            clearMessages();
+        }
+
+        function clearMessages() {
+            document.getElementById('login-error').classList.remove('show');
+            document.getElementById('login-success').classList.remove('show');
+            document.getElementById('register-error').classList.remove('show');
+            document.getElementById('register-success').classList.remove('show');
+        }
+
+        function showError(formType, message) {
+            const errorEl = document.getElementById(`${formType}-error`);
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+        }
+
+        function showSuccess(formType, message) {
+            const successEl = document.getElementById(`${formType}-success`);
+            successEl.textContent = message;
+            successEl.classList.add('show');
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+
+            if (!username || !password) {
+                showError('login', 'Please enter username and password');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.innerHTML = '<span class="spinner"></span>Signing in...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Save token to localStorage
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    showSuccess('login', 'Login successful! Redirecting...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'home.html';
+                    }, 1500);
+                } else {
+                    showError('login', data.detail || 'Login failed');
+                }
+            } catch (error) {
+                showError('login', 'Connection error: ' + error.message);
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Sign In';
+            }
+        }
+
+        async function handleRegister() {
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
+            const btn = document.getElementById('register-btn');
+
+            if (!username || !email || !password || !confirm) {
+                showError('register', 'Please fill all fields');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('register', 'Password must be at least 6 characters');
+                return;
+            }
+
+            if (password !== confirm) {
+                showError('register', 'Passwords do not match');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.innerHTML = '<span class="spinner"></span>Creating account...';
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess('register', 'Account created! Signing you in...');
+                    
+                    setTimeout(() => {
+                        document.getElementById('login-username').value = username;
+                        document.getElementById('login-password').value = password;
+                        handleLogin();
+                    }, 1000);
+                } else {
+                    showError('register', data.detail || 'Registration failed');
+                }
+            } catch (error) {
+                showError('register', 'Connection error: ' + error.message);
+            } finally {
+                btn.classList.remove('loading');
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        // Demo login for testing
+        window.demoLogin = async function() {
+            document.getElementById('login-username').value = 'demo';
+            document.getElementById('login-password').value = 'demo123';
+            handleLogin();
+        };
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = 'home.html';
+            }
+        });
+
+        // Allow Enter key to submit
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                if (document.getElementById('login-form').classList.contains('active')) {
+                    handleLogin();
+                } else {
+                    handleRegister();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

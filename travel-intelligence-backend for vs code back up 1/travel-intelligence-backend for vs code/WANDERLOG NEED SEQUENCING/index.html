@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Trip to Islamabad | TripNest</title>
+    <link rel="icon" href="assets/images/logoWithText.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body class="PlannerPage">
+    <div class="PlannerApp" id="plannerApp">
+        <header class="PlannerTopbar">
+            <div class="PlannerTopbar__left">
+                <a class="PlannerTopbar__brand" href="home.html">
+                    🧭 TripNest
+                </a>
+                <div class="PlannerTopbar__status">Saved</div>
+                <button type="button" class="PlannerTopbar__link" id="save-trip-btn">Save Trip</button>
+                <button type="button" class="PlannerTopbar__link" data-ui-action="undo">Undo</button>
+                <button type="button" class="PlannerTopbar__link" data-ui-action="redo">Redo</button>
+            </div>
+            <div class="PlannerTopbar__actions">
+                <a href="home.html" class="PlannerPillButton PlannerPillButton--light">Home</a>
+                <a href="plan-trip.html" class="PlannerPillButton PlannerPillButton--light">Plan new trip</a>
+                <button type="button" class="PlannerPillButton PlannerPillButton--light" id="trip-prefs-btn" title="Budget, time, questionnaire">Preferences</button>
+                <button type="button" class="PlannerPillButton PlannerPillButton--accent" id="engine-suggestions-btn" title="Backend place suggestions">Get suggestions</button>
+                <button type="button" class="PlannerPillButton PlannerPillButton--dark">Share</button>
+                <button type="button" class="PlannerPillButton PlannerPillButton--dark">Get app</button>
+                <button type="button" class="PlannerPillButton PlannerPillButton--dark" id="logout-btn">Logout</button>
+                <div class="PlannerTopbarMenu dropdown">
+                    <button type="button" class="PlannerIconButton" id="topbar-menu-btn" aria-haspopup="true" aria-expanded="false" aria-label="Trip menu">⋯</button>
+                    <div class="dropdown-menu dropdown-menu-right" id="topbar-menu-items">
+                        <button type="button" class="dropdown-item" data-topbar-menu="trip-settings">Trip settings</button>
+                        <button type="button" class="dropdown-item" data-topbar-menu="trip-preferences">Trip preferences & engine</button>
+                        <button type="button" class="dropdown-item" data-topbar-menu="engine-suggestions">Get engine suggestions</button>
+                        <button type="button" class="dropdown-item" data-topbar-menu="trip-journal">View trip journal</button>
+                        <button type="button" class="dropdown-item" data-topbar-menu="print-trip">Print this trip</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="PlannerShell">
+            <aside class="PlannerSidebar">
+                <button type="button" class="PlannerAiButton">AI Assistant</button>
+                <nav class="PlannerSidebar__nav" id="plannerSidebar"></nav>
+            </aside>
+            <main class="PlannerMain" id="plannerMain"></main>
+            <aside class="PlannerMapPanel" id="plannerMapPanel"></aside>
+        </div>
+    </div>
+    <div class="PlannerToast" id="plannerToast" aria-live="polite"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="session-manager.js"></script>
+    <script src="trip-flow.js"></script>
+    <script src="trip-preferences.js"></script>
+    <script src="print-trip.js"></script>
+    <script>
+        requireLogin();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

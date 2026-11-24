@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TripNest Route Optimization Map Verification (4 Pakistani Destinations)</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 12px 16px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .header-badge {
+      background: #7c3aed;
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .metrics-bar {
+      background: #1e1b4b;
+      padding: 10px 16px;
+      border-bottom: 1px solid #4338ca;
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .metric-item {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .metric-val {
+      font-weight: 700;
+      color: #a78bfa;
+    }
+    #map {
+      flex: 1;
+      width: 100%;
+      background: #f8fafc;
+    }
+    .custom-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.32);
+      border: 2px solid #ffffff;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .custom-marker.is-selected {
+      transform: scale(1.35);
+      border-color: #0f172a;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.45);
+      z-index: 1000 !important;
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px;
+      padding: 4px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      color: #0f172a;
+    }
+    .popup-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .popup-sub {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-title">TripNest Mobile Route Optimization Verification</div>
+    <div class="header-badge">4 Pakistani Stops</div>
+  </header>
+  <div class="metrics-bar">
+    <div class="metric-item"><span>Sequence:</span> <span class="metric-val">1. Taxila ➔ 2. Faisal Mosque ➔ 3. Pak Monument ➔ 4. Rawat Fort</span></div>
+    <div class="metric-item"><span>Total Distance:</span> <span class="metric-val">51.1 km</span></div>
+    <div class="metric-item"><span>Estimated Drive:</span> <span class="metric-val">~88 min</span></div>
+    <div class="metric-item"><span>Distance Saved:</span> <span class="metric-val">20.1 km (28.2%)</span></div>
+  </div>
+  <div id="map"></div>
+
+  <script>
+    var places = [
+      { id: "taxila-1", title: "Taxila Museum / Dharmarajika", subtitle: "UNESCO World Heritage Site", lat: 33.7463, lon: 72.8055, label: "1", color: "#7c3aed" },
+      { id: "faisal-mosque-2", title: "Faisal Mosque", subtitle: "Shah Faisal Ave, E-8, Islamabad", lat: 33.7297, lon: 73.0372, label: "2", color: "#7c3aed" },
+      { id: "pak-monument-3", title: "Pakistan Monument", subtitle: "Shakarparian Hills, Islamabad", lat: 33.6938, lon: 73.0686, label: "3", color: "#7c3aed" },
+      { id: "rawat-fort-4", title: "Rawat Fort", subtitle: "Grand Trunk Rd, Rawalpindi / Rawat", lat: 33.4965, lon: 73.1895, label: "4", color: "#7c3aed" }
+    ];
+
+    var map = L.map('map', {
+      zoomControl: true,
+      attributionControl: true
+    }).setView([33.6844, 73.0479], 10);
+
+    // Panes matching InteractiveMap.js
+    map.createPane('routes');
+    map.getPane('routes').style.zIndex = 350;
+    map.getPane('routes').style.pointerEvents = 'none';
+    map.createPane('markers');
+    map.getPane('markers').style.zIndex = 450;
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var routeLayerGroup = L.layerGroup().addTo(map);
+    var boundsPoints = [];
+
+    // Render 4 markers
+    places.forEach(function(p) {
+      var size = 28;
+      var iconHtml = '<div class="custom-marker" style="background:' + p.color + '; width:' + size + 'px; height:' + size + 'px;">' + p.label + '</div>';
+      var icon = L.divIcon({
+        html: iconHtml,
+        className: 'marker-wrapper',
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2]
+      });
+
+      var marker = L.marker([p.lat, p.lon], { icon: icon, pane: 'markers' }).addTo(map);
+      marker.bindPopup('<div class="popup-title">Stop ' + p.label + ': ' + p.title + '</div><div class="popup-sub">' + p.subtitle + '<br/>Lat: ' + p.lat + ', Lon: ' + p.lon + '</div>');
+      boundsPoints.push([p.lat, p.lon]);
+    });
+
+    // Draw connecting lines with fallback and OSRM enrichment
+    for (var i = 1; i < places.length; i++) {
+      (function(idx, p1, p2) {
+        var directCoords = [[p1.lat, p1.lon], [p2.lat, p2.lon]];
+
+        // Draw initial straight line casing & polyline
+        var casing = L.polyline(directCoords, { color: '#ffffff', weight: 8.5, opacity: 0.95, lineCap: 'round', lineJoin: 'round', pane: 'routes' }).addTo(routeLayerGroup);
+        var poly = L.polyline(directCoords, { color: '#7c3aed', weight: 5, opacity: 0.95, lineCap: 'round', lineJoin: 'round', pane: 'routes' }).addTo(routeLayerGroup);
+
+        // Fetch OSRM road geometry
+        var url = 'https://router.project-osrm.org/route/v1/driving/' + p1.lon + ',' + p1.lat + ';' + p2.lon + ',' + p2.lat + '?overview=full&geometries=geojson&steps=false';
+        fetch(url)
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            var coords = data && data.routes && data.routes[0] && data.routes[0].geometry && data.routes[0].geometry.coordinates;
+            var dist = data && data.routes && data.routes[0] && data.routes[0].distance;
+            var dur = data && data.routes && data.routes[0] && data.routes[0].duration;
+
+            if (coords && coords.length >= 2) {
+              var leafletCoords = coords.map(function(c) { return [c[1], c[0]]; });
+              casing.setLatLngs(leafletCoords);
+              poly.setLatLngs(leafletCoords);
+              var dLabel = (dist / 1000).toFixed(1) + ' km';
+              var durLabel = Math.round(dur / 60) + ' min';
+              poly.bindTooltip('<strong>' + p1.title + ' ➔ ' + p2.title + '</strong><br/>' + dLabel + ' • ~' + durLabel + ' (OSRM Road)', { sticky: true, opacity: 0.9 });
+            }
+          })
+          .catch(function(e) {
+            console.log('OSRM road fallback to straight-line active for leg', p1.title, p2.title);
+          });
+      })(i - 1, places[i - 1], places[i]);
+    }
+
+    // Auto-fit bounds
+    map.fitBounds(boundsPoints, { padding: [40, 40], maxZoom: 15 });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,95 @@
+# TripNest Unified Repository .gitignore
+
+# Dependencies
+node_modules/
+*/node_modules/
+*/*/node_modules/
+*/*/*/node_modules/
+
+# Environment and sensitive credential files
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*/.env.example
+!*/*/.env.example
+!*/*/*/.env.example
+*.pem
+*.key
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+
+# Python Virtual Environments & caches
+venv/
+.venv/
+*/venv/
+*/.venv/
+*/*/venv/
+*/*/.venv/
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*/*/*/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*/.pytest_cache/
+*/*/.pytest_cache/
+
+# Expo & React Native Build Outputs
+.expo/
+*/.expo/
+dist/
+*/dist/
+web-build/
+*/web-build/
+expo-env.d.ts
+*/expo-env.d.ts
+.metro-health-check*
+*.tsbuildinfo
+
+# Internal / Temporary development dumps & backups
+.dbg/
+*/.dbg/
+*/*/.dbg/
+.sandbox_packages/
+*/.sandbox_packages/
+*/*/.sandbox_packages/
+temp_docx/
+*/temp_docx/
+*/*/temp_docx/
+_backup_before_consolidation/
+*/_backup_before_consolidation/
+*/*/_backup_before_consolidation/
+SAFE_MOVED_FILES/
+*/SAFE_MOVED_FILES/
+*/*/SAFE_MOVED_FILES/
+.git_submodule_backup/
+*/.git_submodule_backup/
+
+# IDE & Editor artifacts
+.vscode/
+*/.vscode/
+.cursor/
+*/.cursor/
+.idea/
+*/.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*

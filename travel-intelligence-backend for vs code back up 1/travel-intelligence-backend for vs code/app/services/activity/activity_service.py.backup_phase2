@@ -1,0 +1,7 @@
+"""Activity service placeholders for reusable timeline/event history."""
+
+
+def activity_service_todo() -> None:
+    """Placeholder marker for future activity history service work."""
+    # TODO: Add reusable activity event recording and timeline queries here.
+    return None

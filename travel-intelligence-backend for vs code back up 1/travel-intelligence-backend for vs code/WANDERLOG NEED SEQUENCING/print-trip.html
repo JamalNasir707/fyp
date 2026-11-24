@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print trip | TripNest</title>
+    <link rel="stylesheet" href="print-trip.css">
+</head>
+<body class="PrintPage">
+    <div class="PrintToolbar no-print">
+        <a href="index.html" class="PrintToolbar__back">← Back to workspace</a>
+        <button type="button" class="PrintToolbar__btn" id="print-now-btn">Print this trip</button>
+    </div>
+    <main id="print-root" class="PrintRoot"></main>
+    <script src="trip-flow.js"></script>
+    <script src="print-trip.js"></script>
+    <script>
+        const trip = readPrintSnapshot() || createEmptyTripTemplate();
+        const root = document.getElementById('print-root');
+        const model = buildPrintModel(trip);
+        root.innerHTML = renderPrintDocument(model);
+        document.title = `Print — ${model.title}`;
+        document.getElementById('print-now-btn')?.addEventListener('click', () => window.print());
+        window.addEventListener('load', () => {
+            if (new URLSearchParams(location.search).get('auto') === '1') {
+                setTimeout(() => window.print(), 500);
+            }
+        });
+    </script>
+</body>
+</html>

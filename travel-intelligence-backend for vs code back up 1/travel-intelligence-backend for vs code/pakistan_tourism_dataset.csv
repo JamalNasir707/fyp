@@ -1,0 +1,15 @@
+Year,Province,City,Destination_Type,Domestic_Tourists,International_Tourists,Peak_Season,Average_Temperature_C,Average_Cost_USD,Main_Attraction,Safety_Rating,Accommodation_Type,Transport_Accessibility,Popularity_Score
+2015,Punjab,Lahore,Historical,4500000,350000,Winter,18,300,Badshahi Mosque,4,Hotels,High,85
+2015,Sindh,Karachi,Urban,3800000,420000,Winter,22,350,Clifton Beach,3,Hotels,High,82
+2015,Khyber Pakhtunkhwa,Swat,Nature,900000,45000,Summer,15,250,Swat Valley,4,Guest Houses,Medium,78
+2015,Gilgit-Baltistan,Hunza,Mountain,600000,85000,Summer,10,400,Hunza Valley,5,Lodges,Medium,88
+2016,Punjab,Islamabad,Urban,2000000,500000,Spring,20,320,Faisal Mosque,5,Hotels,High,87
+2016,Sindh,Thatta,Historical,700000,25000,Winter,24,180,Makli Necropolis,3,Guest Houses,Low,70
+2017,Balochistan,Ziarat,Nature,350000,12000,Summer,14,220,Ziarat Juniper Forest,3,Guest Houses,Low,68
+2018,Gilgit-Baltistan,Skardu,Mountain,800000,120000,Summer,9,450,Shangrila Lake,5,Lodges,Medium,90
+2019,Khyber Pakhtunkhwa,Naran,Nature,1100000,60000,Summer,12,300,Saif-ul-Malook Lake,4,Hotels,Medium,86
+2020,Punjab,Taxila,Historical,500000,15000,Winter,19,200,Taxila Museum,4,Hotels,High,72
+2021,Sindh,Hyderabad,Cultural,650000,22000,Winter,25,210,Pakka Qila,3,Guest Houses,Medium,69
+2022,Gilgit-Baltistan,Fairy Meadows,Mountain,450000,90000,Summer,7,500,Nanga Parbat View,5,Camps,Low,92
+2023,Khyber Pakhtunkhwa,Chitral,Nature,550000,40000,Summer,11,280,Kalash Valley,4,Guest Houses,Low,81
+2024,Punjab,Murree,Hill Station,2500000,180000,Summer,13,260,Mall Road Murree,4,Hotels,High,89

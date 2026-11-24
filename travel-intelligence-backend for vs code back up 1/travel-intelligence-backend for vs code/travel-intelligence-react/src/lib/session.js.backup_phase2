@@ -1,0 +1,113 @@
+import { API_BASE } from './constants'
+
+export function readStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null')
+  } catch {
+    return null
+  }
+}
+
+export function readStoredToken() {
+  return localStorage.getItem('token')
+}
+
+export function persistSession(token, user) {
+  localStorage.setItem('token', token)
+  localStorage.setItem('user', JSON.stringify(user))
+}
+
+export function clearSession() {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+}
+
+async function requestJson(path, { method = 'GET', body, token } = {}) {
+  let response
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    })
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(`Backend not running. Start the server at ${API_BASE}`)
+    }
+    throw new Error('Network request failed')
+  }
+
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok || data.success === false) {
+    if (response.status === 401) {
+      throw new Error('Invalid credentials')
+    }
+    if (response.status === 403) {
+      throw new Error(data.detail || 'You do not have permission to perform this action')
+    }
+    if (response.status === 404) {
+      throw new Error(data.detail || 'Requested resource was not found')
+    }
+    if (response.status >= 500) {
+      throw new Error('Server error. Please try again.')
+    }
+    throw new Error(data.detail || data.message || 'Request failed')
+  }
+  return data
+}
+
+export async function loginRequest(credentials) {
+  return requestJson('/auth/login', { method: 'POST', body: credentials })
+}
+
+export async function googleLoginRequest(accessToken) {
+  return requestJson('/auth/google', { method: 'POST', body: { access_token: accessToken } })
+}
+
+export async function registerRequest(payload) {
+  return requestJson('/auth/register', { method: 'POST', body: payload })
+}
+
+export async function verifyTokenRequest(token) {
+  return requestJson('/auth/verify', { method: 'POST', body: { token } })
+}
+
+export async function logoutRequest(token) {
+  try {
+    await requestJson('/auth/logout', { method: 'POST', body: { token } })
+  } catch {
+    // Ignore logout network failures; local session is cleared anyway.
+  }
+}
+
+export async function fetchTripsRequest(token) {
+  return requestJson('/trips', { token })
+}
+
+export async function fetchAdminOverviewRequest(token) {
+  return requestJson('/admin/overview', { token })
+}
+
+export async function updateProfileRequest(token, payload) {
+  return requestJson('/account/profile', { method: 'PUT', token, body: payload })
+}
+
+export async function deleteAccountRequest(token, payload) {
+  return requestJson('/account', { method: 'DELETE', token, body: payload })
+}
+
+export async function createTripRequest(token, trip) {
+  return requestJson('/trips', { method: 'POST', token, body: { trip } })
+}
+
+export async function updateTripRequest(token, trip) {
+  const tripId = trip?.id ?? trip?.tripId
+  return requestJson(`/trips/${tripId}`, { method: 'PUT', token, body: { trip } })
+}
+
+export async function deleteTripRequest(token, tripId) {
+  return requestJson(`/trips/${tripId}`, { method: 'DELETE', token })
+}
