@@ -1,0 +1,1344 @@
+// Backup of ExploreScreen.js created before Browse All / Place Search parity enhancements
+import React, { useEffect, useState, useMemo, useRef } from 'react'
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Image,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import { colors } from '../../theme/colors'
+import { typography } from '../../theme/typography'
+import { apiService } from '../../api/apiService'
+import { useApp } from '../../context/AppContext'
+import { getPlaceImage, getPlacesForDestination } from '../../constants/images'
+import {
+  getCurrentDeviceLocation,
+  getDestinationCoordinates,
+  guessProvinceFromTripName,
+  resolvePakistaniCity,
+  fetchDynamicPlacesForCity,
+} from '../../utils/locationService'
+import { getCurrentEnvironment, ENVIRONMENTS } from '../../config/env'
+import SearchBar from '../../components/common/SearchBar'
+import Badge from '../../components/common/Badge'
+import EmptyState from '../../components/common/EmptyState'
+import ModalSheet from '../../components/common/ModalSheet'
+import Button from '../../components/common/Button'
+import PlaceCard from '../../components/places/PlaceCard'
+
+const CATEGORY_TILES = [
+  { id: 'Attraction', label: 'Top Sights', queryKey: 'tourist attractions', icon: 'location', bg: '#EFF6FF', color: '#2563EB' },
+  { id: 'Scenic', label: 'Scenic Views', queryKey: 'scenic viewpoints lakes', icon: 'camera', bg: '#F0FDFA', color: '#0D9488' },
+  { id: 'Dining', label: 'Food & Cafes', queryKey: 'restaurants cafes food', icon: 'restaurant', bg: '#FFF7ED', color: '#EA580C' },
+  { id: 'Historic', label: 'Heritage', queryKey: 'historical heritage museum', icon: 'business', bg: '#FAF5FF', color: '#7C3AED' },
+]
+
+export function ExploreScreen({ navigation, route }) {
+  const { activeTrip, savedTrips, addPlaceToPool, addPlaceToDay, setActiveTrip, addToWishlist } = useApp()
+
+  const initialDestination = route?.params?.destination || activeTrip?.destination || 'Islamabad'
+  const initialQuery = route?.params?.query || ''
+
+  const [places, setPlaces] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [fetchError, setFetchError] = useState(null)
+
+  // Location & City Filter state
+  const [activeLocationMode, setActiveLocationMode] = useState('destination') // 'destination' | 'near_me' | 'city'
+  const [selectedCity, setSelectedCity] = useState(initialDestination)
+  const [userGpsCoords, setUserGpsCoords] = useState(null)
+  const [locationStatusMessage, setLocationStatusMessage] = useState('')
+
+  // Search & Category Filter state
+  const [selectedCat, setSelectedCat] = useState(route?.params?.category || 'All')
+  const [searchQuery, setSearchQuery] = useState(initialQuery)
+  const searchDebounceTimer = useRef(null)
+
+  // Details Modal state
+  const [selectedPlaceDetails, setSelectedPlaceDetails] = useState(null)
+  const [detailsLoading, setDetailsLoading] = useState(false)
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false)
+
+  // Schedule Modal state
+  const [scheduleModalVisible, setScheduleModalVisible] = useState(false)
+  const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null)
+  const [selectedTripTarget, setSelectedTripTarget] = useState(activeTrip || (savedTrips && savedTrips[0]))
+
+  // Custom Pakistani City Modal state
+  const [customCityModalVisible, setCustomCityModalVisible] = useState(false)
+  const [customCityInput, setCustomCityInput] = useState('')
+
+  const isFirstMount = useRef(true)
+
+  // Sync route params if destination or query or category changes externally
+  useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false
+      return
+    }
+    const nextDest = route?.params?.destination
+    const nextQuery = route?.params?.query
+    const nextCat = route?.params?.category
+
+    if (nextDest || nextQuery !== undefined || nextCat) {
+      const targetCity = nextDest || selectedCity
+      const targetQuery = nextQuery !== undefined ? nextQuery : searchQuery
+
+      if (nextDest && nextDest !== selectedCity) {
+        setSelectedCity(nextDest)
+        setActiveLocationMode('destination')
+      }
+      if (nextQuery !== undefined && nextQuery !== searchQuery) {
+        setSearchQuery(nextQuery)
+      }
+      if (nextCat && nextCat !== selectedCat) {
+        setSelectedCat(nextCat)
+      }
+
+      loadPlacesForCurrentContext(targetQuery, targetCity)
+    }
+  }, [route?.params?.destination, route?.params?.query, route?.params?.category])
+
+  // Sync selected trip target
+  useEffect(() => {
+    if (activeTrip) {
+      setSelectedTripTarget(activeTrip)
+    }
+  }, [activeTrip])
+
+  // Track which places are already saved in the active trip's pool or itinerary
+  const savedPlaceKeys = useMemo(() => {
+    const keys = new Set()
+    const targetTrip = activeTrip || (savedTrips && savedTrips[0])
+    if (targetTrip) {
+      ;(targetTrip.placesPool || []).forEach((p) => {
+        const id = String(p.place_id || p.id || '').replace(/^serp-/, '').toLowerCase()
+        const title = String(p.title || p.name || '').trim().toLowerCase()
+        if (id) keys.add(id)
+        if (title) keys.add(title)
+      })
+      ;(targetTrip.days || []).forEach((d) => {
+        ;(d.items || []).forEach((p) => {
+          const id = String(p.place_id || p.id || '').replace(/^serp-/, '').toLowerCase()
+          const title = String(p.title || p.name || '').trim().toLowerCase()
+          if (id) keys.add(id)
+          if (title) keys.add(title)
+        })
+      })
+    }
+    return keys
+  }, [activeTrip, savedTrips])
+
+  const isPlaceSaved = (p) => {
+    if (!p) return false
+    const id = String(p.place_id || p.id || '').replace(/^serp-/, '').toLowerCase()
+    const title = String(p.title || p.name || '').trim().toLowerCase()
+    return (id && savedPlaceKeys.has(id)) || (title && savedPlaceKeys.has(title))
+  }
+
+  // Initial load
+  useEffect(() => {
+    loadPlacesForCurrentContext()
+  }, [activeLocationMode, selectedCity, selectedCat])
+
+  // Handle Search Query with debounce
+  function handleSearchQueryChange(text) {
+    setSearchQuery(text)
+    if (searchDebounceTimer.current) clearTimeout(searchDebounceTimer.current)
+    searchDebounceTimer.current = setTimeout(() => {
+      loadPlacesForCurrentContext(text)
+    }, 500)
+  }
+
+  /**
+   * Loads places using backend API parameters matching the website's WorkspacePage.jsx.
+   */
+  async function loadPlacesForCurrentContext(overrideSearchText = searchQuery, overrideCity = selectedCity) {
+    setLoading(true)
+    setFetchError(null)
+
+    try {
+      let lat = 33.6844
+      let lon = 73.0479
+      let destinationLabel = overrideCity || selectedCity
+
+      if (activeLocationMode === 'near_me') {
+        if (userGpsCoords) {
+          lat = userGpsCoords.lat
+          lon = userGpsCoords.lon
+          destinationLabel = 'Near You'
+        } else {
+          // Attempt GPS fetch
+          const locRes = await getCurrentDeviceLocation(false)
+          if (locRes.granted && locRes.coords) {
+            lat = locRes.coords.lat
+            lon = locRes.coords.lon
+            setUserGpsCoords(locRes.coords)
+            destinationLabel = 'Near You'
+            setLocationStatusMessage('Using device GPS coordinates')
+          } else {
+            // Graceful fallback to destination coordinates
+            setActiveLocationMode('destination')
+            setLocationStatusMessage(locRes.error || 'Location access unavailable. Switched to destination.')
+            const resolved = await resolvePakistaniCity(destinationLabel)
+            lat = resolved?.lat || getDestinationCoordinates(destinationLabel).lat
+            lon = resolved?.lon || getDestinationCoordinates(destinationLabel).lon
+          }
+        }
+      } else {
+        // Dynamically resolve city coordinates via OpenStreetMap Nominatim or verified registry
+        const resolved = await resolvePakistaniCity(destinationLabel)
+        if (resolved) {
+          lat = resolved.lat
+          lon = resolved.lon
+          destinationLabel = resolved.city || destinationLabel
+        } else {
+          const coords = getDestinationCoordinates(destinationLabel)
+          lat = coords.lat
+          lon = coords.lon
+        }
+      }
+
+      // Parity query construction matching travel-intelligence-react/WorkspacePage.jsx
+      const qClean = (overrideSearchText || '').trim()
+      let finalQuery = 'tourist attractions'
+
+      const activeCatItem = CATEGORY_TILES.find((c) => c.id === selectedCat)
+      const catQueryText = activeCatItem ? activeCatItem.queryKey : selectedCat
+
+      if (selectedCat !== 'All' && qClean) {
+        finalQuery = `${catQueryText} ${qClean}`
+      } else if (selectedCat !== 'All') {
+        finalQuery = `${catQueryText} in ${destinationLabel}`
+      } else if (qClean) {
+        finalQuery = `${qClean} in ${destinationLabel}`
+      } else {
+        finalQuery = `tourist attractions in ${destinationLabel}`
+      }
+
+      let fetchedPlaces = []
+
+      // 1. Attempt API fetch from backend
+      try {
+        const res = await apiService.getExplorePlaces(lat, lon, finalQuery)
+        if (res?.places && Array.isArray(res.places) && res.places.length > 0) {
+          fetchedPlaces = res.places
+        }
+      } catch {
+        // Backend unavailable
+      }
+
+      // 2. If no places returned or in offline/mock mode, query dynamic OpenStreetMap engine
+      if (fetchedPlaces.length === 0) {
+        fetchedPlaces = await fetchDynamicPlacesForCity(destinationLabel, lat, lon, selectedCat, qClean)
+      }
+
+      // 3. STRICT CITY ISOLATION FILTER:
+      // Prevent unrelated cities (e.g. Islamabad/Lahore) from leaking into other destinations
+      const curatedKeys = [
+        'islamabad', 'lahore', 'karachi', 'peshawar', 'swat', 'hunza', 'skardu', 'murree',
+        'rawalpindi', 'faisalabad', 'multan', 'bahawalpur', 'gujranwala', 'sialkot', 'chakwal',
+        'hyderabad', 'sukkur', 'larkana', 'mohenjo', 'thatta',
+        'mingora', 'kalam', 'malam', 'naran', 'kaghan', 'abbottabad', 'mansehra', 'chitral', 'kumrat', 'dir',
+        'karimabad', 'attabad', 'shigar', 'khaplu', 'deosai', 'fairy meadows', 'naltar', 'passu', 'gulmit', 'khunjerab', 'gilgit', 'astore', 'rama', 'phander', 'gupis', 'ghizer',
+        'quetta', 'ziarat', 'gwadar', 'hingol', 'kund malir', 'ormara', 'bolan',
+        'muzaffarabad', 'neelum', 'keran', 'sharda', 'arang kel', 'ratti gali', 'rawalakot', 'banjosa', 'leepa',
+      ]
+      const isCuratedTarget = curatedKeys.some((k) => destinationLabel.toLowerCase().includes(k))
+
+      if (!isCuratedTarget && fetchedPlaces.length > 0) {
+        const destLow = destinationLabel.toLowerCase()
+        fetchedPlaces = fetchedPlaces.filter((p) => {
+          const pDest = (p.destination || '').toLowerCase()
+          const pAddr = (p.address || p.subtitle || '').toLowerCase()
+          const pTitle = (p.name || p.title || '').toLowerCase()
+          const isOsm = String(p.id).startsWith('osm-') || String(p.id).startsWith('nom-')
+          return isOsm || pDest.includes(destLow) || pAddr.includes(destLow) || pTitle.includes(destLow)
+        })
+      }
+
+      setPlaces(fetchedPlaces)
+      setFetchError(null)
+    } catch (err) {
+      setFetchError(err.message || 'Could not load places. Try another search.')
+      setPlaces([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // --- Location Mode Selection ---
+  async function handleSelectNearMe() {
+    setLocationStatusMessage('Requesting GPS location...')
+    const locRes = await getCurrentDeviceLocation(true)
+    if (locRes.granted && locRes.coords) {
+      setUserGpsCoords(locRes.coords)
+      setActiveLocationMode('near_me')
+      setLocationStatusMessage('GPS location active')
+    } else {
+      Alert.alert(
+        'Location Access Denied or Unavailable',
+        'Could not access current GPS location. You can explore places by choosing your trip destination or selecting a city from the list below.',
+        [{ text: 'OK' }]
+      )
+      setLocationStatusMessage('Location permission denied. Destination mode active.')
+      setActiveLocationMode('destination')
+    }
+  }
+
+  function handleSelectDestinationMode() {
+    setActiveLocationMode('destination')
+    setSelectedCity(activeTrip?.destination || initialDestination || 'Islamabad')
+    setLocationStatusMessage('')
+  }
+
+  function handleSelectCity(city) {
+    setActiveLocationMode('city')
+    setSelectedCity(city)
+    setLocationStatusMessage('')
+  }
+
+  // --- Place Details Modal ---
+  async function handleOpenPlaceDetails(place) {
+    setSelectedPlaceDetails(place)
+    setDetailsModalVisible(true)
+    setDetailsLoading(true)
+
+    try {
+      const details = await apiService.getPlaceDetails(place.id, place.data_id, place)
+      if (details?.place) {
+        setSelectedPlaceDetails((prev) => ({
+          ...prev,
+          ...details.place,
+        }))
+      }
+    } catch {
+      // Keep basic place details
+    } finally {
+      setDetailsLoading(false)
+    }
+  }
+
+  // --- Add to Trip & Pool Handlers (with duplicate protection) ---
+  function handleOpenScheduleModal(place) {
+    if (!savedTrips || savedTrips.length === 0) {
+      Alert.alert(
+        'No Trips Available',
+        'Please create a trip first before scheduling places.',
+        [{ text: 'Plan a Trip', onPress: () => navigation.navigate('TripsTab') }]
+      )
+      return
+    }
+    setSelectedPlaceForModal(place)
+    setSelectedTripTarget(activeTrip || savedTrips[0])
+    setScheduleModalVisible(true)
+  }
+
+  function handleScheduleToDay(dayId) {
+    if (!selectedPlaceForModal || !selectedTripTarget) return
+
+    const targetTrip = selectedTripTarget
+    if (activeTrip && String(activeTrip.id || activeTrip.tripId) !== String(targetTrip.id || targetTrip.tripId)) {
+      setActiveTrip(targetTrip)
+    }
+
+    addPlaceToDay(dayId, selectedPlaceForModal, targetTrip.id || targetTrip.tripId)
+    setScheduleModalVisible(false)
+    setDetailsModalVisible(false)
+
+    const dayName = (targetTrip.days || []).find((d) => d.id === dayId)?.shortLabel || 'Selected Day'
+    Alert.alert(
+      'Added to Itinerary!',
+      `"${selectedPlaceForModal.name || selectedPlaceForModal.title}" scheduled into ${dayName}.`,
+      [
+        { text: 'Keep Exploring' },
+        { text: 'View Itinerary', onPress: () => navigation.navigate('Itinerary') },
+      ]
+    )
+  }
+
+  function handleSaveToPoolFromModal(place) {
+    const targetTrip = selectedTripTarget || activeTrip || savedTrips[0]
+    if (!targetTrip) return
+
+    if (activeTrip && String(activeTrip.id || activeTrip.tripId) !== String(targetTrip.id || targetTrip.tripId)) {
+      setActiveTrip(targetTrip)
+    }
+
+    addPlaceToPool(place, targetTrip.id || targetTrip.tripId)
+    addToWishlist(place)
+    setScheduleModalVisible(false)
+    setDetailsModalVisible(false)
+    Alert.alert('Saved to Pool', `"${place.name || place.title}" added to Places to Visit in "${targetTrip.title}".`)
+  }
+
+  function handleCustomCitySubmit(cityNameOverride = null) {
+    const raw = (typeof cityNameOverride === 'string' ? cityNameOverride : customCityInput).trim()
+    if (!raw) {
+      Alert.alert('Required', 'Please enter a Pakistani city name.')
+      return
+    }
+    const formatted = raw.charAt(0).toUpperCase() + raw.slice(1)
+    setCustomCityModalVisible(false)
+    setCustomCityInput('')
+    setSelectedCity(formatted)
+    setActiveLocationMode('city')
+    setLocationStatusMessage(`Showing places in ${formatted}, Pakistan`)
+    loadPlacesForCurrentContext(searchQuery, formatted)
+  }
+
+  // Expanded Pakistan-wide city catalog covering all provinces & territories
+  const popularCities = [
+    'Islamabad',
+    'Lahore',
+    'Karachi',
+    'Peshawar',
+    'Quetta',
+    'Gilgit',
+    'Skardu',
+    'Hunza Valley',
+    'Swat',
+    'Murree',
+    'Rawalpindi',
+    'Multan',
+    'Faisalabad',
+    'Bahawalpur',
+    'Gwadar',
+    'Muzaffarabad',
+    'Neelum Valley',
+    'Naran',
+    'Hyderabad',
+    'Sukkur',
+    'Abbottabad',
+    'Chitral',
+    'Sialkot',
+    'Gujranwala',
+    'Chakwal',
+    'Ziarat',
+    'Rawalakot',
+  ]
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* 1. HEADER */}
+      <View style={styles.header}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title}>Explore Places</Text>
+          <Text style={styles.subtitle}>
+            {activeLocationMode === 'near_me'
+              ? 'Discovering attractions near your current GPS location'
+              : `Places for ${selectedCity}`}
+          </Text>
+        </View>
+      </View>
+
+      {/* 2. SEARCH BAR */}
+      <View style={styles.searchWrapper}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={handleSearchQueryChange}
+          placeholder={`Search in ${activeLocationMode === 'near_me' ? 'current location' : selectedCity}...`}
+        />
+      </View>
+
+      {/* Location Status Message if any */}
+      {locationStatusMessage ? (
+        <View style={styles.locationStatusBanner}>
+          <Ionicons
+            name={activeLocationMode === 'near_me' ? 'navigate-circle' : 'information-circle-outline'}
+            size={16}
+            color={colors.primary}
+          />
+          <Text style={styles.locationStatusText}>{locationStatusMessage}</Text>
+        </View>
+      ) : null}
+
+      <FlatList
+        data={places}
+        keyExtractor={(item, index) => String(item.id || item.place_id || item.name || `explore-${index}`)}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => loadPlacesForCurrentContext()}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+        ListHeaderComponent={
+          <View style={styles.listHeaderContainer}>
+            {/* Location Mode Filter Chips */}
+            <View style={styles.locationChipsSection}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalChips}>
+                {/* 1. Trip Destination Chip */}
+                {activeTrip?.destination && (
+                  <TouchableOpacity
+                    style={[
+                      styles.locationPill,
+                      activeLocationMode === 'destination' && styles.locationPillActive,
+                    ]}
+                    onPress={handleSelectDestinationMode}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name="airplane"
+                      size={14}
+                      color={activeLocationMode === 'destination' ? colors.textWhite : colors.primary}
+                    />
+                    <Text
+                      style={[
+                        styles.locationPillText,
+                        activeLocationMode === 'destination' && styles.locationPillTextActive,
+                      ]}
+                    >
+                      Trip: {activeTrip.destination}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+
+                {/* 2. Near Me GPS Chip */}
+                <TouchableOpacity
+                  style={[
+                    styles.locationPill,
+                    activeLocationMode === 'near_me' && styles.locationPillActive,
+                  ]}
+                  onPress={handleSelectNearMe}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons
+                    name="locate"
+                    size={14}
+                    color={activeLocationMode === 'near_me' ? colors.textWhite : colors.primary}
+                  />
+                  <Text
+                    style={[
+                      styles.locationPillText,
+                      activeLocationMode === 'near_me' && styles.locationPillTextActive,
+                    ]}
+                  >
+                    Near Me (GPS)
+                  </Text>
+                </TouchableOpacity>
+
+                {/* 3. Popular Pakistani Cities */}
+                {popularCities.map((city) => {
+                  const isSelected = activeLocationMode === 'city' && selectedCity === city
+                  return (
+                    <TouchableOpacity
+                      key={city}
+                      style={[styles.cityPill, isSelected && styles.cityPillActive]}
+                      onPress={() => handleSelectCity(city)}
+                      activeOpacity={0.8}
+                    >
+                      <Ionicons
+                        name="location-sharp"
+                        size={12}
+                        color={isSelected ? colors.textWhite : colors.textSecondary}
+                      />
+                      <Text style={[styles.cityPillText, isSelected && styles.cityPillTextActive]}>
+                        {city}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                })}
+
+                {/* 4. Custom Pakistani City Button */}
+                <TouchableOpacity
+                  style={[styles.cityPill, { borderColor: colors.primary, borderWidth: 1.5, borderStyle: 'dashed' }]}
+                  onPress={() => setCustomCityModalVisible(true)}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="add-circle-outline" size={13} color={colors.primary} />
+                  <Text style={[styles.cityPillText, { color: colors.primary, fontWeight: '700' }]}>
+                    Other City
+                  </Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+
+            {/* Category 2x2 Grid */}
+            <View style={styles.categoriesSection}>
+              <View style={styles.catHeaderRow}>
+                <Text style={styles.catSectionTitle}>Categories</Text>
+                {selectedCat !== 'All' && (
+                  <TouchableOpacity onPress={() => setSelectedCat('All')}>
+                    <Text style={styles.clearFilterText}>Show all</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              <View style={styles.catGrid}>
+                {CATEGORY_TILES.map((cat) => {
+                  const isSelected = selectedCat === cat.id
+                  return (
+                    <TouchableOpacity
+                      key={cat.id}
+                      style={[
+                        styles.catGridItem,
+                        isSelected && styles.catGridItemActive,
+                      ]}
+                      onPress={() => setSelectedCat(isSelected ? 'All' : cat.id)}
+                      activeOpacity={0.8}
+                    >
+                      <View style={[styles.catIconSquare, { backgroundColor: cat.bg }]}>
+                        <Ionicons name={cat.icon} size={18} color={cat.color} />
+                      </View>
+                      <Text style={[styles.catTileLabel, isSelected && styles.catTileLabelActive]}>
+                        {cat.label}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                })}
+              </View>
+            </View>
+
+            {/* Section Heading & Place Count */}
+            <View style={styles.attractionsHeaderRow}>
+              <Text style={styles.attractionsTitle}>
+                {activeLocationMode === 'near_me'
+                  ? 'Attractions Near You'
+                  : `Attractions in ${selectedCity}`}
+              </Text>
+              <Text style={styles.attractionsCount}>
+                {loading
+                  ? 'Searching...'
+                  : `${places.length} places • ${getCurrentEnvironment() === ENVIRONMENTS.MOCK ? 'Mock Catalog' : 'Live API'}`}
+              </Text>
+            </View>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <PlaceCard
+            place={item}
+            onPress={() => handleOpenPlaceDetails(item)}
+            onSave={() => handleSaveToPoolFromModal(item)}
+            onAddToTrip={() => handleOpenScheduleModal(item)}
+            isSaved={isPlaceSaved(item)}
+          />
+        )}
+        ListEmptyComponent={
+          loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary} />
+              <Text style={styles.loadingText}>Fetching attractions & sights...</Text>
+            </View>
+          ) : fetchError ? (
+            <EmptyState
+              iconName="cloud-offline-outline"
+              title="Could not load places"
+              description={fetchError}
+              actionTitle="Retry"
+              onActionPress={() => loadPlacesForCurrentContext()}
+            />
+          ) : (
+            <EmptyState
+              iconName="compass-outline"
+              title="No places found"
+              description={`No attractions found for "${searchQuery || selectedCat}" in ${
+                activeLocationMode === 'near_me' ? 'your location' : selectedCity
+              }.`}
+              actionTitle="Reset Filters"
+              onActionPress={() => {
+                setSearchQuery('')
+                setSelectedCat('All')
+                handleSelectDestinationMode()
+              }}
+            />
+          )
+        }
+      />
+
+      {/* Modal 1: Place Details & Preview Sheet */}
+      <ModalSheet
+        visible={detailsModalVisible}
+        onClose={() => setDetailsModalVisible(false)}
+        title={selectedPlaceDetails?.name || selectedPlaceDetails?.title || 'Attraction Details'}
+        subtitle={selectedPlaceDetails?.destination || selectedCity || 'Pakistan'}
+      >
+        {selectedPlaceDetails && (
+          <ScrollView style={styles.detailsScroll} showsVerticalScrollIndicator={false}>
+            <View style={styles.detailsHeroContainer}>
+              <Image
+                source={{
+                  uri:
+                    selectedPlaceDetails.image ||
+                    selectedPlaceDetails.photo ||
+                    getPlaceImage(
+                      selectedPlaceDetails.id,
+                      selectedPlaceDetails.category,
+                      selectedPlaceDetails.name || selectedPlaceDetails.title
+                    ),
+                }}
+                style={styles.detailsHeroImage}
+                resizeMode="cover"
+              />
+              <View style={styles.detailsHeroBadgeRow}>
+                <Badge label={selectedPlaceDetails.category || 'Attraction'} variant="primary" />
+                {selectedPlaceDetails.rating != null && !isNaN(Number(selectedPlaceDetails.rating)) ? (
+                  <View style={styles.ratingBadge}>
+                    <Ionicons name="star" size={13} color="#F59E0B" />
+                    <Text style={styles.ratingText}>
+                      {Number(selectedPlaceDetails.rating).toFixed(1)}
+                      {selectedPlaceDetails.reviews || selectedPlaceDetails.reviewsCount
+                        ? ` (${selectedPlaceDetails.reviews || selectedPlaceDetails.reviewsCount})`
+                        : ''}
+                    </Text>
+                  </View>
+                ) : null}
+              </View>
+            </View>
+
+            <View style={styles.detailsBody}>
+              <Text style={styles.detailsTitle}>{selectedPlaceDetails.name || selectedPlaceDetails.title}</Text>
+
+              <View style={styles.addressRow}>
+                <Ionicons name="location" size={15} color={colors.primary} />
+                <Text style={styles.detailsAddress}>
+                  {selectedPlaceDetails.address || selectedPlaceDetails.destination || selectedCity}
+                </Text>
+              </View>
+
+              {/* Photo Verification & Attribution Metadata */}
+              {Boolean(selectedPlaceDetails.imageAttribution || selectedPlaceDetails.imageSource) && (
+                <View style={styles.detailsInfoRow}>
+                  <Ionicons
+                    name={selectedPlaceDetails.imageVerified === false ? 'information-circle-outline' : 'shield-checkmark-outline'}
+                    size={14}
+                    color={selectedPlaceDetails.imageVerified === false ? colors.textTertiary : '#10B981'}
+                  />
+                  <Text style={[styles.detailsInfoText, { fontSize: 11, color: colors.textTertiary }]}>
+                    {selectedPlaceDetails.imageVerified === false
+                      ? 'Category reference • Verified photograph pending'
+                      : `Verified Authentic • ${selectedPlaceDetails.imageAttribution || 'TripNest Catalog'}`}
+                  </Text>
+                </View>
+              )}
+
+              {/* Operating details if returned */}
+              {selectedPlaceDetails.hours ? (
+                <View style={styles.detailsInfoRow}>
+                  <Ionicons name="time-outline" size={15} color={colors.textSecondary} />
+                  <Text style={styles.detailsInfoText}>{selectedPlaceDetails.hours}</Text>
+                </View>
+              ) : null}
+
+              {selectedPlaceDetails.phoneNumber ? (
+                <View style={styles.detailsInfoRow}>
+                  <Ionicons name="call-outline" size={15} color={colors.textSecondary} />
+                  <Text style={styles.detailsInfoText}>{selectedPlaceDetails.phoneNumber}</Text>
+                </View>
+              ) : null}
+
+              <Text style={styles.overviewHeading}>Overview</Text>
+              <Text style={styles.detailsDescription}>
+                {selectedPlaceDetails.description ||
+                  `A popular travel highlight in ${selectedCity}. Featuring remarkable architecture, local culture, and sightseeing for travelers.`}
+              </Text>
+
+              {/* Action Buttons Row */}
+              <View style={styles.detailsActionsRow}>
+                <Button
+                  title="Save to Pool"
+                  variant="outline"
+                  iconName="bookmark-outline"
+                  pill={true}
+                  onPress={() => handleSaveToPoolFromModal(selectedPlaceDetails)}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  title="Add to Itinerary"
+                  variant="primary"
+                  iconName="calendar-outline"
+                  pill={true}
+                  onPress={() => handleOpenScheduleModal(selectedPlaceDetails)}
+                  style={{ flex: 1.2 }}
+                />
+              </View>
+            </View>
+          </ScrollView>
+        )}
+      </ModalSheet>
+
+      {/* Modal 2: Schedule Place to Trip / Day */}
+      <ModalSheet
+        visible={scheduleModalVisible}
+        onClose={() => setScheduleModalVisible(false)}
+        title={selectedPlaceForModal ? (selectedPlaceForModal.name || selectedPlaceForModal.title) : 'Add to Trip'}
+        subtitle="Schedule in your TripNest workspace"
+      >
+        {selectedPlaceForModal && (
+          <ScrollView style={styles.scheduleModalContent} showsVerticalScrollIndicator={false}>
+            {/* Target Trip Picker */}
+            <Text style={styles.scheduleHeader}>Target Trip:</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tripPickScroll}>
+              {savedTrips.map((t, idx) => {
+                const isSelected =
+                  String(t.id || t.tripId) ===
+                  String(selectedTripTarget?.id || selectedTripTarget?.tripId)
+                const tripKey = `explore-target-${t.id || t.tripId || idx}`
+                return (
+                  <TouchableOpacity
+                    key={tripKey}
+                    style={[styles.tripPickCard, isSelected && styles.tripPickCardActive]}
+                    onPress={() => setSelectedTripTarget(t)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons
+                      name="airplane"
+                      size={14}
+                      color={isSelected ? colors.textWhite : colors.primary}
+                    />
+                    <Text
+                      style={[styles.tripPickText, isSelected && styles.tripPickTextActive]}
+                      numberOfLines={1}
+                    >
+                      {t.title || t.name}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              })}
+            </ScrollView>
+
+            <Text style={[styles.scheduleHeader, { marginTop: 14 }]}>Where to add?</Text>
+
+            {/* Quick Button: Unscheduled Places Pool */}
+            <TouchableOpacity
+              style={styles.poolOptionRow}
+              onPress={() => handleSaveToPoolFromModal(selectedPlaceForModal)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.optionIconCircle, { backgroundColor: '#F0FDFA' }]}>
+                <Ionicons name="bookmark" size={18} color={colors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.poolOptionTitle}>Places to Visit (Pool)</Text>
+                <Text style={styles.poolOptionDesc}>Keep unscheduled to organize later</Text>
+              </View>
+              <Ionicons name="add-circle" size={22} color={colors.primary} />
+            </TouchableOpacity>
+
+            <Text style={[styles.scheduleHeader, { marginTop: 14 }]}>Or Schedule to Specific Day:</Text>
+
+            {selectedTripTarget && Array.isArray(selectedTripTarget.days) && selectedTripTarget.days.length > 0 ? (
+              <View style={styles.daysList}>
+                {selectedTripTarget.days.map((day, idx) => (
+                  <TouchableOpacity
+                    key={day.id || idx}
+                    style={styles.daySelectionRow}
+                    onPress={() => handleScheduleToDay(day.id)}
+                    activeOpacity={0.8}
+                  >
+                    <View style={styles.daySelectionLeft}>
+                      <View style={styles.dayNumPill}>
+                        <Text style={styles.dayNumText}>DAY {idx + 1}</Text>
+                      </View>
+                      <View>
+                        <Text style={styles.daySelectLabel}>{day.label || `Day ${idx + 1}`}</Text>
+                        <Text style={styles.daySelectCount}>
+                          {(day.items || []).length} stops currently scheduled
+                        </Text>
+                      </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={colors.primary} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            ) : (
+              <Text style={styles.noDaysText}>
+                No days configured for this trip yet. You can add it to the Places Pool above!
+              </Text>
+            )}
+          </ScrollView>
+        )}
+      </ModalSheet>
+
+      {/* Modal 3: Enter Any Pakistani City */}
+      <ModalSheet
+        visible={customCityModalVisible}
+        onClose={() => setCustomCityModalVisible(false)}
+        title="Explore Any Pakistani City"
+        subtitle="Search and discover genuine attractions across Pakistan"
+      >
+        <View style={styles.customCityModalContent}>
+          <Text style={styles.customCityLabel}>Enter City Name</Text>
+          <View style={styles.customCityInputRow}>
+            <Ionicons name="location-outline" size={20} color={colors.primary} style={{ marginRight: 8 }} />
+            <TextInput
+              style={styles.customCityTextInput}
+              placeholder="e.g. Multan, Quetta, Gwadar, Gilgit..."
+              placeholderTextColor={colors.textTertiary}
+              value={customCityInput}
+              onChangeText={setCustomCityInput}
+              autoFocus={true}
+              onSubmitEditing={() => handleCustomCitySubmit()}
+              returnKeyType="search"
+            />
+          </View>
+
+          <Text style={[styles.customCityLabel, { marginTop: 16 }]}>Quick Suggestions</Text>
+          <View style={styles.suggestionGrid}>
+            {['Bahawalpur', 'Quetta', 'Multan', 'Faisalabad', 'Hyderabad', 'Gwadar', 'Sukkur', 'Abbottabad'].map((c) => (
+              <TouchableOpacity
+                key={c}
+                style={styles.suggestionChip}
+                onPress={() => handleCustomCitySubmit(c)}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="compass-outline" size={13} color={colors.primary} />
+                <Text style={styles.suggestionChipText}>{c}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Button
+            title="Explore This City"
+            variant="primary"
+            pill={true}
+            size="lg"
+            onPress={() => handleCustomCitySubmit()}
+            style={{ marginTop: 22 }}
+          />
+        </View>
+      </ModalSheet>
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+  title: {
+    ...typography.h2,
+    color: colors.textPrimary,
+    fontWeight: '800',
+  },
+  subtitle: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  searchWrapper: {
+    paddingHorizontal: 20,
+    marginTop: 6,
+    marginBottom: 6,
+  },
+  locationStatusBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    marginHorizontal: 20,
+    borderRadius: 8,
+    gap: 6,
+    marginBottom: 6,
+  },
+  locationStatusText: {
+    ...typography.caption,
+    color: colors.primaryDark,
+    fontWeight: '600',
+  },
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  listHeaderContainer: {
+    paddingBottom: 8,
+  },
+  locationChipsSection: {
+    marginVertical: 6,
+  },
+  horizontalChips: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  locationPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    gap: 6,
+  },
+  locationPillActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  locationPillText: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  locationPillTextActive: {
+    color: colors.textWhite,
+  },
+  cityPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+    gap: 4,
+  },
+  cityPillActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  cityPillText: {
+    ...typography.caption,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  cityPillTextActive: {
+    color: colors.textWhite,
+    fontWeight: '700',
+  },
+  categoriesSection: {
+    marginVertical: 10,
+  },
+  catHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  catSectionTitle: {
+    ...typography.h3,
+    color: colors.textPrimary,
+    fontWeight: '800',
+  },
+  clearFilterText: {
+    ...typography.caption,
+    color: colors.primary,
+    fontWeight: '700',
+  },
+  catGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  catGridItem: {
+    width: '48%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    padding: 12,
+    gap: 10,
+  },
+  catGridItemActive: {
+    borderColor: colors.primary,
+    backgroundColor: colors.primaryLight,
+  },
+  catIconSquare: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catTileLabel: {
+    ...typography.subtitle2,
+    color: colors.textPrimary,
+    fontWeight: '700',
+    flex: 1,
+  },
+  catTileLabelActive: {
+    color: colors.primaryDark,
+  },
+  attractionsHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 14,
+    marginBottom: 8,
+  },
+  attractionsTitle: {
+    ...typography.subtitle1,
+    fontWeight: '800',
+    color: colors.textPrimary,
+  },
+  attractionsCount: {
+    ...typography.caption,
+    color: colors.textTertiary,
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    gap: 10,
+  },
+  loadingText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  detailsScroll: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  detailsHeroContainer: {
+    height: 180,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    marginBottom: 14,
+  },
+  detailsHeroImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  detailsHeroBadgeRow: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    right: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: colors.textWhite,
+    fontWeight: '700',
+  },
+  detailsBody: {
+    gap: 8,
+  },
+  detailsTitle: {
+    ...typography.h2,
+    color: colors.textPrimary,
+    fontWeight: '800',
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  detailsAddress: {
+    ...typography.body2,
+    color: colors.textSecondary,
+  },
+  detailsInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
+  detailsInfoText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  overviewHeading: {
+    ...typography.subtitle2,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    marginTop: 8,
+  },
+  detailsDescription: {
+    ...typography.body2,
+    color: colors.textSecondary,
+    lineHeight: 22,
+  },
+  detailsActionsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 18,
+    paddingBottom: 20,
+  },
+  scheduleModalContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  scheduleHeader: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 8,
+  },
+  tripPickScroll: {
+    marginBottom: 8,
+  },
+  tripPickCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: 8,
+    gap: 6,
+  },
+  tripPickCardActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  tripPickText: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    maxWidth: 160,
+  },
+  tripPickTextActive: {
+    color: colors.textWhite,
+  },
+  poolOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    padding: 12,
+    gap: 12,
+  },
+  optionIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  poolOptionTitle: {
+    ...typography.subtitle2,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  poolOptionDesc: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  daysList: {
+    gap: 8,
+  },
+  daySelectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 14,
+    padding: 12,
+  },
+  daySelectionLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  dayNumPill: {
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  dayNumText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.primaryDark,
+  },
+  daySelectLabel: {
+    ...typography.subtitle2,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  daySelectCount: {
+    ...typography.caption,
+    color: colors.textTertiary,
+  },
+  noDaysText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+    paddingVertical: 8,
+  },
+  customCityModalContent: {
+    paddingVertical: 8,
+  },
+  customCityLabel: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    fontWeight: '700',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  customCityInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+  },
+  customCityTextInput: {
+    flex: 1,
+    height: 44,
+    fontSize: 15,
+    color: colors.textPrimary,
+  },
+  suggestionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  suggestionChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+    gap: 6,
+  },
+  suggestionChipText: {
+    ...typography.caption,
+    color: colors.textPrimary,
+    fontWeight: '600',
+  },
+})
+
+export default ExploreScreen
+

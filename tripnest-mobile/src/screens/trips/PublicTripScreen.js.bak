@@ -1,0 +1,538 @@
+import React, { useEffect, useState } from 'react'
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import { colors } from '../../theme/colors'
+import { typography } from '../../theme/typography'
+import { apiService } from '../../api/apiService'
+import { getDestinationImage, getPlaceImage } from '../../constants/images'
+import { formatTripDateRange, getDayColor, formatTime12h } from '../../utils/tripUtils'
+import InteractiveMap from '../../components/map/InteractiveMap'
+import Badge from '../../components/common/Badge'
+import Card from '../../components/common/Card'
+import EmptyState from '../../components/common/EmptyState'
+
+export function PublicTripScreen({ navigation, route }) {
+  const { tripId } = route?.params || {}
+  const [trip, setTrip] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [showMap, setShowMap] = useState(false)
+  const [selectedPlaceId, setSelectedPlaceId] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    if (!tripId) {
+      setError('Trip ID is required')
+      setLoading(false)
+      return
+    }
+
+    setLoading(true)
+    setError('')
+    apiService
+      .getPublicTripById(tripId)
+      .then((res) => {
+        if (!active) return
+        if (res?.success && res?.trip) {
+          setTrip(res.trip)
+          const firstStop = res.trip.days?.[0]?.items?.[0]?.id
+          if (firstStop) setSelectedPlaceId(firstStop)
+        } else {
+          setError(res?.detail || 'This trip is private or does not exist.')
+        }
+      })
+      .catch((err) => {
+        if (!active) return
+        setError(err.message || 'This trip is not publicly available.')
+      })
+      .finally(() => {
+        if (active) setLoading(false)
+      })
+
+    return () => {
+      active = false
+    }
+  }, [tripId])
+
+  async function handleShare() {
+    if (!trip) return
+    try {
+      await Share.share({
+        message: `Check out "${trip.title || trip.destination}" on TripNest!\nDestination: ${trip.destination}\nDates: ${trip.dates || formatTripDateRange(trip.startDate, trip.endDate)}`,
+      })
+    } catch {
+      // dismissed
+    }
+  }
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Loading public itinerary...</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+
+  if (error || !trip) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.navBar}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.navTitle}>Public Trip</Text>
+          <View style={{ width: 38 }} />
+        </View>
+        <EmptyState
+          iconName="lock-closed-outline"
+          title="Trip Not Available"
+          description={error || 'This trip may be private, archived, or deleted by the author.'}
+          actionTitle="Go Back"
+          onActionPress={() => navigation.goBack()}
+        />
+      </SafeAreaView>
+    )
+  }
+
+  const destination = trip.destination || trip.city || 'Pakistan'
+  const heroImage = trip.coverImage || getDestinationImage(destination)
+  const days = Array.isArray(trip.days) ? trip.days : []
+  const owner = trip.owner || {}
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* Top Navbar */}
+      <View style={styles.navBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.7}>
+          <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
+        </TouchableOpacity>
+        <View style={styles.titleCol}>
+          <Text style={styles.navTitle} numberOfLines={1}>
+            {trip.title || destination}
+          </Text>
+          <View style={styles.publicBadgeRow}>
+            <Ionicons name="globe-outline" size={12} color={colors.primary} />
+            <Text style={styles.publicBadgeText}>Public Itinerary</Text>
+          </View>
+        </View>
+        <View style={styles.navRightRow}>
+          <TouchableOpacity
+            style={styles.navIconBtn}
+            onPress={() => setShowMap(!showMap)}
+            activeOpacity={0.8}
+          >
+            <Ionicons name={showMap ? 'list' : 'map'} size={18} color={colors.textPrimary} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navIconBtn} onPress={handleShare} activeOpacity={0.8}>
+            <Ionicons name="share-outline" size={18} color={colors.textPrimary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Hero Cover */}
+        <View style={styles.heroCard}>
+          <Image source={{ uri: heroImage }} style={styles.heroImage} resizeMode="cover" />
+          <View style={styles.heroOverlay} />
+          <View style={styles.heroContent}>
+            <Badge label="Public Guide" variant="success" size="sm" />
+            <Text style={styles.heroTitle}>{trip.title || destination}</Text>
+            <Text style={styles.heroDates}>
+              {trip.dates || formatTripDateRange(trip.startDate, trip.endDate)}
+            </Text>
+          </View>
+        </View>
+
+        {/* Creator Info Card */}
+        {owner.username ? (
+          <TouchableOpacity
+            style={styles.creatorCard}
+            onPress={() => navigation.navigate('UserProfile', { username: owner.username })}
+            activeOpacity={0.8}
+          >
+            <View style={styles.creatorAvatar}>
+              {owner.profileImage ? (
+                <Image source={{ uri: owner.profileImage }} style={styles.avatarImg} />
+              ) : (
+                <Text style={styles.avatarInitials}>
+                  {(owner.name || owner.username || 'U').slice(0, 2).toUpperCase()}
+                </Text>
+              )}
+            </View>
+            <View style={styles.creatorMeta}>
+              <Text style={styles.creatorName}>{owner.name || owner.displayName || owner.username}</Text>
+              <Text style={styles.creatorHandle}>@{owner.username}</Text>
+            </View>
+            <View style={styles.viewProfileBtn}>
+              <Text style={styles.viewProfileText}>View Profile</Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.primary} />
+            </View>
+          </TouchableOpacity>
+        ) : null}
+
+        {/* Map View toggle */}
+        {showMap && (
+          <View style={styles.mapContainer}>
+            <InteractiveMap
+              trip={trip}
+              selectedDayId="all"
+              selectedPlaceId={selectedPlaceId}
+              onSelectPlace={(id) => setSelectedPlaceId(id)}
+              showRoutes={true}
+            />
+          </View>
+        )}
+
+        {/* Days & Timeline */}
+        <View style={styles.timelineSection}>
+          <Text style={styles.sectionHeading}>Trip Itinerary ({days.length} Days)</Text>
+
+          {days.map((day, dayIdx) => {
+            const items = (day.items || []).filter((item) => item.type !== 'note' && item.type !== 'checklist')
+            const dayColor = day.color || getDayColor(dayIdx)
+
+            return (
+              <Card key={day.id || dayIdx} style={styles.dayCard} padding="md">
+                <View style={styles.dayHeader}>
+                  <View style={[styles.dayColorDot, { backgroundColor: dayColor }]} />
+                  <Text style={styles.dayTitle}>{day.label || `Day ${dayIdx + 1}`}</Text>
+                  <Text style={styles.stopCount}>{items.length} stops</Text>
+                </View>
+
+                {items.length === 0 ? (
+                  <Text style={styles.emptyDayText}>No scheduled places for this day.</Text>
+                ) : (
+                  items.map((item, itemIdx) => {
+                    const placeImg = getPlaceImage(item.id, item.category, item.title || item.name)
+                    return (
+                      <View key={item.id ? `${day.id}-${item.id}` : `pub-day-${dayIdx}-item-${itemIdx}`} style={styles.stopRow}>
+                        <View style={styles.stopLeftCol}>
+                          <View style={[styles.stopIndexBadge, { backgroundColor: dayColor }]}>
+                            <Text style={styles.stopIndexText}>{itemIdx + 1}</Text>
+                          </View>
+                          {itemIdx < items.length - 1 && <View style={styles.stopConnectorLine} />}
+                        </View>
+
+                        <View style={styles.stopBody}>
+                          <View style={styles.stopCardInner}>
+                            <Image source={{ uri: placeImg }} style={styles.stopThumb} />
+                            <View style={styles.stopInfo}>
+                              <Text style={styles.stopTitle} numberOfLines={1}>
+                                {item.title || item.name}
+                              </Text>
+                              {item.subtitle || item.address ? (
+                                <Text style={styles.stopAddress} numberOfLines={1}>
+                                  {item.subtitle || item.address}
+                                </Text>
+                              ) : null}
+                              {item.startTime ? (
+                                <View style={styles.timeTag}>
+                                  <Ionicons name="time-outline" size={11} color={colors.textSecondary} />
+                                  <Text style={styles.timeText}>{formatTime12h(item.startTime)}</Text>
+                                </View>
+                              ) : null}
+                            </View>
+                          </View>
+                          {item.note ? <Text style={styles.stopNote}>{item.note}</Text> : null}
+                        </View>
+                      </View>
+                    )
+                  })
+                )}
+              </Card>
+            )
+          })}
+        </View>
+
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  navBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+  },
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.surfaceHover,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  titleCol: {
+    flex: 1,
+  },
+  navTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  publicBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  publicBadgeText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  navRightRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  navIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.surfaceHover,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollContent: {
+    padding: 16,
+    gap: 16,
+  },
+  heroCard: {
+    height: 180,
+    borderRadius: 16,
+    overflow: 'hidden',
+    position: 'relative',
+    justifyContent: 'flex-end',
+    padding: 16,
+  },
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+  heroContent: {
+    gap: 6,
+  },
+  heroTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.textWhite,
+  },
+  heroDates: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.9)',
+    fontWeight: '500',
+  },
+  creatorCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  creatorAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  avatarImg: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+  avatarInitials: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primaryDark,
+  },
+  creatorMeta: {
+    flex: 1,
+  },
+  creatorName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  creatorHandle: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  viewProfileBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  viewProfileText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  mapContainer: {
+    height: 240,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+  },
+  timelineSection: {
+    gap: 12,
+  },
+  sectionHeading: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  dayCard: {
+    backgroundColor: colors.surface,
+  },
+  dayHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  dayColorDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
+  },
+  dayTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.textPrimary,
+    flex: 1,
+  },
+  stopCount: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  emptyDayText: {
+    fontSize: 13,
+    color: colors.textTertiary,
+    fontStyle: 'italic',
+    paddingVertical: 8,
+  },
+  stopRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  stopLeftCol: {
+    alignItems: 'center',
+    width: 28,
+    marginRight: 8,
+  },
+  stopIndexBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stopIndexText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.textWhite,
+  },
+  stopConnectorLine: {
+    flex: 1,
+    width: 2,
+    backgroundColor: colors.borderLight,
+    marginVertical: 4,
+  },
+  stopBody: {
+    flex: 1,
+  },
+  stopCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surfaceHover,
+    borderRadius: 8,
+    padding: 8,
+    gap: 10,
+  },
+  stopThumb: {
+    width: 44,
+    height: 44,
+    borderRadius: 6,
+  },
+  stopInfo: {
+    flex: 1,
+  },
+  stopTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  stopAddress: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  timeTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    marginTop: 3,
+  },
+  timeText: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  stopNote: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 4,
+    marginLeft: 6,
+    fontStyle: 'italic',
+  },
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 12,
+  },
+})
+
+export default PublicTripScreen
+

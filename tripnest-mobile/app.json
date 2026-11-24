@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "tripnest-mobile",
+    "slug": "tripnest-mobile",
+    "scheme": "tripnest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tripnest.mobile"
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FBF9F5",
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain"
+        }
+      ],
+      "expo-status-bar"
+    ],
+    "android": {
+      "package": "com.tripnest.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#FBF9F5",
+        "foregroundImage": "./assets/icon.png"
+      },
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

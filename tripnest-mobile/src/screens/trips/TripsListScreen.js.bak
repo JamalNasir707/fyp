@@ -1,0 +1,390 @@
+import React, { useState, useEffect } from 'react'
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import { colors } from '../../theme/colors'
+import { typography } from '../../theme/typography'
+import { useApp } from '../../context/AppContext'
+import TripCard from '../../components/trips/TripCard'
+import SearchBar from '../../components/common/SearchBar'
+import EmptyState from '../../components/common/EmptyState'
+import ModalSheet from '../../components/common/ModalSheet'
+import SegmentedControl from '../../components/common/SegmentedControl'
+import ActionRow from '../../components/common/ActionRow'
+import TripCreationWizard from '../../components/trips/TripCreationWizard'
+
+export function TripsListScreen({ navigation }) {
+  const {
+    savedTrips,
+    loading,
+    loadTrips,
+    activeTrip,
+    setActiveTrip,
+    createTrip,
+    deleteTrip,
+  } = useApp()
+
+  const [filter, setFilter] = useState('all') // 'all' | 'personal' | 'shared' | 'past'
+  const [searchQuery, setSearchQuery] = useState('')
+  const [wizardVisible, setWizardVisible] = useState(false)
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false)
+  const [selectedTripForOptions, setSelectedTripForOptions] = useState(null)
+
+  const filteredTrips = (savedTrips || []).filter((t) => {
+    if (!t) return false
+    const now = new Date()
+    const isPast = t.endDate && !isNaN(new Date(t.endDate).getTime()) && new Date(t.endDate) < now
+    if (filter === 'past') return isPast
+    if (filter === 'personal' && (t.isTripmate || isPast)) return false
+    if (filter === 'shared' && (!t.isTripmate || isPast)) return false
+
+    if (searchQuery.trim().length > 0) {
+      const q = searchQuery.toLowerCase()
+      const title = (t.title || t.name || '').toLowerCase()
+      const dest = (t.destination || '').toLowerCase()
+      return title.includes(q) || dest.includes(q)
+    }
+
+    return true
+  })
+
+  function handleSelectTrip(trip) {
+    setActiveTrip(trip)
+    navigation.navigate('TripDetail', { tripId: trip.id || trip.tripId })
+  }
+
+  function handleOpenOptions(trip) {
+    setSelectedTripForOptions(trip)
+    setOptionsModalVisible(true)
+  }
+
+  function handleDeleteSelectedTrip() {
+    if (!selectedTripForOptions) return
+    const targetTitle =
+      selectedTripForOptions.title || selectedTripForOptions.name || 'this trip'
+
+    Alert.alert(
+      'Delete Trip',
+      `Are you sure you want to permanently delete "${targetTitle}"? All stops, budget records, and custom lists will be removed.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const idToDelete =
+              selectedTripForOptions.id || selectedTripForOptions.tripId
+            setOptionsModalVisible(false)
+            setSelectedTripForOptions(null)
+            await deleteTrip(idToDelete)
+          },
+        },
+      ]
+    )
+  }
+
+  function handleDuplicateSelectedTrip() {
+    if (!selectedTripForOptions) return
+    const duplicated = {
+      ...selectedTripForOptions,
+      title: `${selectedTripForOptions.title || selectedTripForOptions.name} (Copy)`,
+      id: Date.now(),
+      tripId: Date.now(),
+      isTripmate: false,
+    }
+    createTrip(duplicated)
+    setOptionsModalVisible(false)
+    Alert.alert(
+      'Trip Duplicated',
+      `Created an independent copy: "${duplicated.title}"`
+    )
+  }
+
+  async function handleWizardTripCreated(payload) {
+    const created = await createTrip(payload)
+    setWizardVisible(false)
+    navigation.navigate('TripDetail', { tripId: created.id || created.tripId })
+  }
+
+  const safeTrips = Array.isArray(savedTrips) ? savedTrips.filter(Boolean) : []
+  const filterTabs = [
+    { id: 'all', label: 'All', count: safeTrips.length },
+    {
+      id: 'personal',
+      label: 'Personal',
+      count: safeTrips.filter((t) => !t.isTripmate).length,
+    },
+    {
+      id: 'shared',
+      label: 'Shared',
+      count: safeTrips.filter((t) => t.isTripmate).length,
+    },
+    { id: 'past', label: 'Past' },
+  ]
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* 1. HEADER */}
+      <View style={styles.header}>
+        <View style={styles.headerTitleCol}>
+          <Text style={styles.title}>Trip Library</Text>
+          <Text style={styles.subtitle}>
+            Organize and manage your travel itineraries
+          </Text>
+        </View>
+
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => setWizardVisible(true)}
+            activeOpacity={0.85}
+          >
+            <Ionicons name="add" size={22} color={colors.textWhite} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* 2. SEARCH */}
+      <View style={styles.searchWrapper}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search by title or destination..."
+        />
+      </View>
+
+      {/* 3. FILTER TABS (SEGMENTED CONTROL) */}
+      <View style={styles.tabsWrapper}>
+        <SegmentedControl
+          tabs={filterTabs}
+          activeTab={filter}
+          onTabChange={setFilter}
+        />
+      </View>
+
+      {/* 4. TRIP CARDS */}
+      <FlatList
+        data={filteredTrips}
+        keyExtractor={(item, index) => {
+          const tid = item.id || item.tripId
+          const scope = item.isTripmate ? 'shared' : 'personal'
+          return tid ? `${scope}-${tid}` : `trip-item-${index}`
+        }}
+        renderItem={({ item }) => (
+          <TripCard
+            trip={item}
+            onPress={() => handleSelectTrip(item)}
+            onOptionsPress={() => handleOpenOptions(item)}
+          />
+        )}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={loadTrips}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
+        ListEmptyComponent={
+          <EmptyState
+            iconName="airplane-outline"
+            title="No trips found"
+            description={
+              searchQuery.length > 0
+                ? 'No itineraries match your search keyword.'
+                : 'Start your journey with a guided TripNest planning experience!'
+            }
+            actionTitle={searchQuery.length > 0 ? 'Clear Search' : 'Plan a Trip'}
+            onActionPress={() => {
+              if (searchQuery.length > 0) setSearchQuery('')
+              else setWizardVisible(true)
+            }}
+          />
+        }
+      />
+
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => setWizardVisible(true)}
+        activeOpacity={0.88}
+      >
+        <Ionicons name="add" size={20} color={colors.textWhite} />
+        <Text style={styles.fabText}>Plan a Trip</Text>
+      </TouchableOpacity>
+
+      {/* 5. TRIP OPTIONS ACTION SHEET */}
+      <ModalSheet
+        visible={optionsModalVisible}
+        onClose={() => setOptionsModalVisible(false)}
+        title={
+          selectedTripForOptions?.title ||
+          selectedTripForOptions?.name ||
+          'Trip Options'
+        }
+        subtitle={
+          selectedTripForOptions?.destination || 'Manage this itinerary workspace'
+        }
+      >
+        {selectedTripForOptions && (
+          <View style={styles.optionsSheetContent}>
+            <ActionRow
+              icon="map-outline"
+              iconColor={colors.primary}
+              iconBg={colors.primaryLight}
+              title="Open Itinerary"
+              subtitle="View day-by-day stops and timings"
+              onPress={() => {
+                setOptionsModalVisible(false)
+                handleSelectTrip(selectedTripForOptions)
+              }}
+            />
+
+            <View style={styles.sheetDivider} />
+
+            <ActionRow
+              icon="star-outline"
+              iconColor="#2563EB"
+              iconBg="#EFF6FF"
+              title="Set as Active Trip"
+              subtitle="Keep handy on Home & Saved Places tab"
+              onPress={() => {
+                setActiveTrip(selectedTripForOptions)
+                setOptionsModalVisible(false)
+                Alert.alert(
+                  'Active Trip Set',
+                  `"${
+                    selectedTripForOptions.title || selectedTripForOptions.name
+                  }" is now your active workspace.`
+                )
+              }}
+            />
+
+            <View style={styles.sheetDivider} />
+
+            <ActionRow
+              icon="copy-outline"
+              iconColor="#D97706"
+              iconBg="#FEF3C7"
+              title="Duplicate Itinerary"
+              subtitle="Create an independent copy with all stops"
+              onPress={handleDuplicateSelectedTrip}
+            />
+
+            <View style={styles.sheetDivider} />
+
+            <ActionRow
+              icon="trash-outline"
+              title="Delete Trip"
+              subtitle="Permanently remove this itinerary"
+              destructive={true}
+              onPress={handleDeleteSelectedTrip}
+            />
+          </View>
+        )}
+      </ModalSheet>
+
+      {/* GUIDED TRIP CREATION WIZARD */}
+      <TripCreationWizard
+        visible={wizardVisible}
+        onClose={() => setWizardVisible(false)}
+        onTripCreated={handleWizardTripCreated}
+      />
+    </SafeAreaView>
+  )
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 6,
+  },
+  headerTitleCol: {
+    flex: 1,
+  },
+  title: {
+    ...typography.h2,
+    color: colors.textPrimary,
+    fontWeight: '800',
+  },
+  subtitle: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  tabsWrapper: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 90,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 9999,
+    gap: 6,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  fabText: {
+    ...typography.button,
+    color: colors.textWhite,
+    fontWeight: '700',
+  },
+  optionsSheetContent: {
+    paddingTop: 6,
+    paddingBottom: 16,
+  },
+  sheetDivider: {
+    height: 1,
+    backgroundColor: colors.borderLight,
+    marginLeft: 64,
+  },
+})
+
+export default TripsListScreen

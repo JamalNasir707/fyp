@@ -1,0 +1,387 @@
+import React from 'react'
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { colors } from '../../theme/colors'
+import { typography } from '../../theme/typography'
+import { getPlaceImage } from '../../constants/images'
+import { findVerifiedLandmark } from '../../services/imageService'
+import Badge from '../common/Badge'
+import { SafeImage } from '../common/SafeImage'
+
+export function PlaceCard({
+  place,
+  onPress,
+  onSave,
+  onAddToTrip,
+  isSaved = false,
+  style,
+  compact = false,
+}) {
+  const destination = place?.destination || place?.city || ''
+  const verified = findVerifiedLandmark(place?.id || place?.place_id, place?.name || place?.title, destination)
+  const resolvedFallback = (verified && verified.imageUrl) || getPlaceImage(place?.id, place?.category, place?.name || place?.title, destination)
+  const candidateUrl = place?.image || place?.photo || place?.thumbnail || place?.imageUrl
+  const isCandidateValid = candidateUrl && typeof candidateUrl === 'string' && candidateUrl.startsWith('http') && !candidateUrl.includes('grass-cs')
+  const imageUrl = isCandidateValid ? candidateUrl : resolvedFallback
+  const fallbackUrls = [
+    ...(Array.isArray(place?.fallbackUrls) ? place.fallbackUrls : []),
+    ...(verified && Array.isArray(verified.fallbackUrls) ? verified.fallbackUrls : []),
+    resolvedFallback,
+  ].filter((u, i, self) => u && typeof u === 'string' && u.startsWith('http') && !u.includes('grass-cs') && self.indexOf(u) === i)
+  const title = place?.name || place?.title || 'Unnamed Attraction'
+  const rawRating = place?.rating
+  const rating = rawRating != null && !isNaN(Number(rawRating)) ? Number(rawRating).toFixed(1) : null
+  const reviews = place?.reviews != null ? place.reviews : (place?.reviewsCount != null ? place.reviewsCount : null)
+  const category = place?.category || 'Attraction'
+  const address = place?.address || place?.subtitle || ''
+
+  if (compact) {
+    return (
+      <TouchableOpacity
+        style={[styles.compactCard, style]}
+        onPress={onPress}
+        activeOpacity={0.88}
+      >
+        <SafeImage source={{ uri: imageUrl }} fallbackUrls={fallbackUrls} style={styles.compactImage} resizeMode="cover" />
+        <View style={styles.compactContent}>
+          <Text style={styles.compactTitle} numberOfLines={1}>{title}</Text>
+          {rating ? (
+            <View style={styles.ratingRow}>
+              <Ionicons name="star" size={12} color={colors.accent} />
+              <Text style={styles.ratingText}>{rating}</Text>
+              {destination ? <Text style={styles.destinationText}>• {destination}</Text> : null}
+            </View>
+          ) : destination ? (
+            <Text style={styles.destinationText} numberOfLines={1}>{destination}</Text>
+          ) : null}
+        </View>
+        {onSave && (
+          <TouchableOpacity
+            style={styles.compactSaveBtn}
+            onPress={onSave}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons
+              name={isSaved ? 'bookmark' : 'bookmark-outline'}
+              size={18}
+              color={isSaved ? colors.primary : colors.textTertiary}
+            />
+          </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+    )
+  }
+
+  return (
+    <TouchableOpacity
+      style={[styles.card, style]}
+      onPress={onPress}
+      activeOpacity={0.92}
+    >
+      {/* Image Banner */}
+      <View style={styles.imageWrapper}>
+        <SafeImage
+          source={{ uri: imageUrl }}
+          fallbackUrls={fallbackUrls}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        {/* Badges Overlay Row */}
+        <View style={styles.badgeOverlay}>
+          <Badge label={category} variant="primary" size="sm" />
+          {Boolean(destination) && (
+            <View style={styles.destinationPill}>
+              <Ionicons name="location-sharp" size={10} color={colors.textWhite} />
+              <Text style={styles.destinationPillText}>{destination}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Quick Save Bookmark Button */}
+        {onSave && (
+          <TouchableOpacity
+            style={styles.saveOverlayBtn}
+            onPress={onSave}
+            activeOpacity={0.8}
+          >
+            <Ionicons
+              name={isSaved ? 'bookmark' : 'bookmark-outline'}
+              size={18}
+              color={isSaved ? colors.primary : colors.textPrimary}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Place Details */}
+      <View style={styles.content}>
+        <View style={styles.headerRow}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+          {Boolean(place?.tag) && (
+            <View style={styles.tagBadge}>
+              <Text style={styles.tagBadgeText}>{place.tag}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Address & Duration */}
+        <View style={styles.metaRow}>
+          {address ? (
+            <View style={styles.addressBox}>
+              <Ionicons name="map-outline" size={12} color={colors.primary} />
+              <Text style={styles.addressText} numberOfLines={1}>{address}</Text>
+            </View>
+          ) : null}
+          {Boolean(place?.timeNeeded) && (
+            <View style={styles.timeBadge}>
+              <Ionicons name="time-outline" size={11} color={colors.textSecondary} />
+              <Text style={styles.timeBadgeText}>{place.timeNeeded}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Footer: Rating & Action */}
+        <View style={styles.footerRow}>
+          {rating ? (
+            <View style={styles.ratingRow}>
+              <Ionicons name="star" size={14} color={colors.accent} />
+              <Text style={styles.ratingText}>{rating}</Text>
+              {reviews != null && <Text style={styles.reviewsText}>({reviews})</Text>}
+            </View>
+          ) : (
+            <View style={styles.ratingRow}>
+              <Ionicons name="compass-outline" size={13} color={colors.textTertiary} />
+              <Text style={[styles.reviewsText, { color: colors.textTertiary }]}>{category}</Text>
+            </View>
+          )}
+
+          {onAddToTrip && (
+            <TouchableOpacity
+              style={[styles.addToTripBtn, isSaved && styles.addedToTripBtn]}
+              onPress={onAddToTrip}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name={isSaved ? "checkmark-circle" : "add"}
+                size={15}
+                color={isSaved ? "#059669" : colors.textWhite}
+              />
+              <Text style={[styles.addToTripText, isSaved && styles.addedToTripText]}>
+                {isSaved ? "In Trip" : "Add to Trip"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 16,
+    shadowColor: colors.shadowColor,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  imageWrapper: {
+    width: '100%',
+    height: 160,
+    backgroundColor: colors.surfaceSubtle,
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  badgeOverlay: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    zIndex: 2,
+  },
+  destinationPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  destinationPillText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: colors.textWhite,
+  },
+  saveOverlayBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  content: {
+    padding: 14,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  title: {
+    ...typography.subtitle1,
+    color: colors.textPrimary,
+    flex: 1,
+  },
+  tagBadge: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginLeft: 6,
+  },
+  tagBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#2563EB',
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
+    marginBottom: 10,
+  },
+  addressBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flex: 1,
+  },
+  addressText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+    flex: 1,
+  },
+  timeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: colors.surfaceSubtle,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  timeBadgeText: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  footerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: colors.surfaceSubtle,
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ratingText: {
+    ...typography.caption,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  reviewsText: {
+    ...typography.caption,
+    color: colors.textTertiary,
+  },
+  addToTripBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primary,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    gap: 4,
+  },
+  addedToTripBtn: {
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  addToTripText: {
+    ...typography.caption,
+    color: colors.textWhite,
+    fontWeight: '700',
+  },
+  addedToTripText: {
+    color: '#059669',
+    fontWeight: '700',
+  },
+  // Compact horizontal style
+  compactCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 10,
+  },
+  compactImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    backgroundColor: colors.surfaceSubtle,
+  },
+  compactContent: {
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 8,
+  },
+  compactTitle: {
+    ...typography.subtitle2,
+    color: colors.textPrimary,
+    marginBottom: 3,
+  },
+  destinationText: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  compactSaveBtn: {
+    padding: 6,
+  },
+})
+
+export default PlaceCard
